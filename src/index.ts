@@ -31,10 +31,10 @@ export type CellStyle = {
   fontName: string;
   rotate?: number;
   border?: {
-    left: [LineType, string];
-    top: [LineType, string];
-    right: [LineType, string];
-    bottom: [LineType, string];
+    left?: [LineType, string];
+    top?: [LineType, string];
+    right?: [LineType, string];
+    bottom?: [LineType, string];
   };
   padding?: [number, number];
 };

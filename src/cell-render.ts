@@ -115,11 +115,7 @@ export function cellRender(canvas: Canvas, text: string, rect: Rect, style: Cell
   }
 
   // clip
-  canvas
-    .attr('fillStyle', bgcolor)
-    .rect(0.5, 0.5, rect.width - 1, rect.height - 1)
-    .clip()
-    .fill();
+  canvas.attr('fillStyle', bgcolor).rect(0, 0, rect.width, rect.height).clip().fill();
 
   // rotate
   if (rotate && rotate > 0) {

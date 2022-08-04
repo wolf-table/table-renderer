@@ -60,9 +60,6 @@ function renderArea(
   if (!area) return;
   canvas.save().translate(area.x, area.y);
 
-  // render lines
-  renderGridLines(canvas, area, defaultLineStyle);
-
   canvas.rect(0, 0, area.width, area.height).clip();
 
   const mergeCellStyle = (r: number, c: number) => {
@@ -83,6 +80,9 @@ function renderArea(
     renderCell(canvas, cell(r, c), rect, mergeCellStyle(r, c), styles);
   });
 
+  // render lines
+  renderGridLines(canvas, area, defaultLineStyle);
+
   // render merges
   if (merges) {
     eachRanges(merges, (it) => {
@@ -90,7 +90,7 @@ function renderArea(
         renderCell(
           canvas,
           cell(it.startRow, it.startCol),
-          area.rect(it),
+          area.rect(it, defaultLineStyle.width),
           mergeCellStyle(it.startRow, it.startCol),
           styles
         );
