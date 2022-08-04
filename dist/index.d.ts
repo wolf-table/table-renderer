@@ -1,4 +1,5 @@
 import { stringAt, expr2xy, xy2expr } from './alphabet';
+import Canvas from './canvas';
 import Range, { eachRanges, findRanges } from './range';
 import Viewport from './viewport';
 import Area from './area';
@@ -79,6 +80,7 @@ export declare type AreaCell = {
 export declare type ViewportCell = {
     placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
+export declare type CellTypeRender = (canvas: Canvas, rect: Rect) => void;
 /**
  * ----------------------------------------------------------------
  * |            | column header                                   |
@@ -133,7 +135,7 @@ export default class TableRender {
      */
     _cell: CellFunc;
     _merges: string[];
-    _styles: CellStyle[];
+    _styles: Partial<CellStyle>[];
     _lineStyle: LineStyle;
     _cellStyle: CellStyle;
     _rowHeader: RowHeader;
@@ -160,7 +162,7 @@ export default class TableRender {
     col(value: ColFunc): this;
     cell(value: (rowIndex: number, colIndex: number) => Cell): this;
     merges(value?: string[]): this;
-    styles(value?: CellStyle[]): this;
+    styles(value?: Partial<CellStyle>[]): this;
     lineStyle(value: Partial<LineStyle>): this;
     cellStyle(value: Partial<CellStyle>): this;
     rowHeader(value?: Partial<RowHeader>): this;
@@ -173,6 +175,9 @@ export default class TableRender {
     colWidthAt(index: number): number;
     get viewport(): Viewport | null;
     static create(container: string | HTMLCanvasElement, width: number, height: number): TableRender;
+    private static _cellTypeRender;
+    static addCellTypeRender(type: string, cellTypeRender: CellTypeRender): void;
+    static getCellTypeRender(type: string): any;
 }
 export { expr2xy, xy2expr, stringAt, Range, Viewport, Area, eachRanges, findRanges };
 declare global {

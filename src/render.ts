@@ -2,7 +2,7 @@ import Area from './area';
 import Canvas from './canvas';
 import { cellRender } from './cell-render';
 import { eachRanges } from './range';
-import Table, { Cell, CellFunc, CellStyle, ColFunc, LineStyle, Rect, RowFunc } from '.';
+import TableRender, { Cell, CellFunc, CellStyle, ColFunc, LineStyle, Rect, RowFunc } from '.';
 
 function renderLines(canvas: Canvas, { width, color }: LineStyle, cb: () => void) {
   if (width > 0) {
@@ -17,18 +17,20 @@ function renderCell(
   cell: Cell,
   rect: Rect,
   defaultStyle: CellStyle,
-  styles: CellStyle[]
+  styles: Partial<CellStyle>[]
 ) {
   let text = '';
   let nstyle = defaultStyle;
+  let type = undefined;
   if (cell) {
     if (typeof cell === 'string' || typeof cell === 'number') text = `${cell}`;
     else {
+      type = cell.type;
       text = (cell.value || '') + '';
-      if (cell.style) nstyle = { ...defaultStyle, ...styles[cell.style] };
+      if (cell.style !== undefined) nstyle = { ...defaultStyle, ...styles[cell.style] };
     }
   }
-  cellRender(canvas, text, rect, nstyle);
+  cellRender(canvas, text, rect, nstyle, type);
 }
 
 function renderGridLines(canvas: Canvas, area: Area, lineStyle: LineStyle) {
@@ -50,7 +52,7 @@ function renderArea(
   cell: CellFunc,
   defaultCellStyle: CellStyle,
   defaultLineStyle: LineStyle,
-  styles: CellStyle[],
+  styles: Partial<CellStyle>[],
   merges?: string[] | null,
   row?: RowFunc,
   col?: ColFunc
@@ -67,11 +69,11 @@ function renderArea(
     const cstyle = { ...defaultCellStyle };
     if (row) {
       const r1 = row(r);
-      if (r1 && r1.style) Object.assign(cstyle, styles[r1.style]);
+      if (r1 && r1.style !== undefined) Object.assign(cstyle, styles[r1.style]);
     }
     if (col) {
       const c1 = col(c);
-      if (c1 && c1.style) Object.assign(cstyle, styles[c1.style]);
+      if (c1 && c1.style !== undefined) Object.assign(cstyle, styles[c1.style]);
     }
     return cstyle;
   };
@@ -98,7 +100,7 @@ function renderArea(
   canvas.restore();
 }
 
-function renderBody(canvas: Canvas, area: Area | null, table: Table) {
+function renderBody(canvas: Canvas, area: Area | null, table: TableRender) {
   renderArea(
     canvas,
     area,
@@ -112,21 +114,21 @@ function renderBody(canvas: Canvas, area: Area | null, table: Table) {
   );
 }
 
-function renderRowHeader(canvas: Canvas, area: Area | null, table: Table) {
+function renderRowHeader(canvas: Canvas, area: Area | null, table: TableRender) {
   const { cell, width, merges, cols } = table._rowHeader;
   if (width > 0) {
     renderArea(canvas, area, cell, table._headerCellStyle, table._headerLineStyle, table._styles, merges);
   }
 }
 
-function renderColHeader(canvas: Canvas, area: Area | null, table: Table) {
+function renderColHeader(canvas: Canvas, area: Area | null, table: TableRender) {
   const { cell, height, merges, rows } = table._colHeader;
   if (height > 0) {
     renderArea(canvas, area, cell, table._headerCellStyle, table._headerLineStyle, table._styles, merges);
   }
 }
 
-export function render(table: Table) {
+export function render(table: TableRender) {
   const { _width, _height, _target, _scale, _viewport, _freeze, _rowHeader, _colHeader } = table;
   if (_viewport) {
     const canvas = new Canvas(_target, _scale);

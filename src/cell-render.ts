@@ -1,4 +1,4 @@
-import { Align, CellStyle, Rect, VerticalAlign, TextLineType } from '.';
+import TableRender, { Align, CellStyle, Rect, VerticalAlign, TextLineType } from '.';
 import Canvas from './canvas';
 
 // align: left | center | right
@@ -83,7 +83,7 @@ function fontString(family: string, size: number, italic: boolean, bold: boolean
 
 // canvas: Canvas2d
 // style:
-export function cellRender(canvas: Canvas, text: string, rect: Rect, style: CellStyle) {
+export function cellRender(canvas: Canvas, text: string, rect: Rect, style: CellStyle, type?: string) {
   const {
     border,
     fontSize,
@@ -121,62 +121,70 @@ export function cellRender(canvas: Canvas, text: string, rect: Rect, style: Cell
     .clip()
     .fill();
 
-  // text style
-  canvas
-    .save()
-    .beginPath()
-    .attr({
-      textAlign: align,
-      textBaseline: valign,
-      font: fontString(fontName, fontSize, italic, bold),
-      fillStyle: color,
-    });
-
   // rotate
   if (rotate && rotate > 0) {
     canvas.rotate(rotate * (Math.PI / 180));
   }
 
-  const [xp, yp] = padding || [5, 5];
-  const tx = textx(align, rect.width, xp);
-  const txts = text.split('\n');
-  const innerWidth = rect.width - xp * 2;
-  const ntxts: string[] = [];
-  txts.forEach((it) => {
-    const txtWidth = canvas.measureTextWidth(it);
-    if (textwrap && txtWidth > innerWidth) {
-      let txtLine = { w: 0, len: 0, start: 0 };
-      for (let i = 0; i < it.length; i += 1) {
-        if (txtLine.w > innerWidth) {
-          ntxts.push(it.substr(txtLine.start, txtLine.len));
-          txtLine = { w: 0, len: 0, start: i };
-        }
-        txtLine.len += 1;
-        txtLine.w += canvas.measureTextWidth(it[i]) + 1;
-      }
-      if (txtLine.len > 0) {
-        ntxts.push(it.substr(txtLine.start, txtLine.len));
-      }
-    } else {
-      ntxts.push(it);
-    }
-  });
+  if (type) {
+    const typeRender = TableRender.getCellTypeRender(type);
+    if (typeRender) typeRender(type, rect);
+  }
 
-  const lineHeight = fontSize * 1.425;
-  const txtHeight = (ntxts.length - 1) * lineHeight;
-  const lineTypes: TextLineType[] = [];
-  if (underline) lineTypes.push('underline');
-  if (strikethrough) lineTypes.push('strikethrough');
-  let ty = texty(valign, rect.height, txtHeight, yp);
-  ntxts.forEach((it) => {
-    const txtWidth = canvas.measureTextWidth(it);
-    canvas.fillText(it, tx, ty);
-    lineTypes.forEach((type) => {
-      canvas.line(...textLine(type, align, valign, tx, ty, txtWidth, fontSize));
+  // text
+  if (text && !/^\s*$/.test(text)) {
+    // text style
+    canvas
+      .save()
+      .beginPath()
+      .attr({
+        textAlign: align,
+        textBaseline: valign,
+        font: fontString(fontName, fontSize, italic, bold),
+        fillStyle: color,
+      });
+
+    const [xp, yp] = padding || [5, 5];
+    const tx = textx(align, rect.width, xp);
+    const txts = text.split('\n');
+    const innerWidth = rect.width - xp * 2;
+    const ntxts: string[] = [];
+    txts.forEach((it) => {
+      const txtWidth = canvas.measureTextWidth(it);
+      if (textwrap && txtWidth > innerWidth) {
+        let txtLine = { w: 0, len: 0, start: 0 };
+        for (let i = 0; i < it.length; i += 1) {
+          if (txtLine.w > innerWidth) {
+            ntxts.push(it.substr(txtLine.start, txtLine.len));
+            txtLine = { w: 0, len: 0, start: i };
+          }
+          txtLine.len += 1;
+          txtLine.w += canvas.measureTextWidth(it[i]) + 1;
+        }
+        if (txtLine.len > 0) {
+          ntxts.push(it.substr(txtLine.start, txtLine.len));
+        }
+      } else {
+        ntxts.push(it);
+      }
     });
-    ty += lineHeight;
-  });
-  canvas.restore();
+
+    const lineHeight = fontSize * 1.425;
+    const txtHeight = (ntxts.length - 1) * lineHeight;
+    const lineTypes: TextLineType[] = [];
+    if (underline) lineTypes.push('underline');
+    if (strikethrough) lineTypes.push('strikethrough');
+    let ty = texty(valign, rect.height, txtHeight, yp);
+    ntxts.forEach((it) => {
+      const txtWidth = canvas.measureTextWidth(it);
+      canvas.fillText(it, tx, ty);
+      lineTypes.forEach((type) => {
+        canvas.line(...textLine(type, align, valign, tx, ty, txtWidth, fontSize));
+      });
+      ty += lineHeight;
+    });
+    canvas.restore();
+  }
 
   canvas.restore();
 }

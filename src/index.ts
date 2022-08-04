@@ -1,4 +1,5 @@
 import { stringAt, expr2xy, xy2expr } from './alphabet';
+import Canvas from './canvas';
 import Range, { eachRanges, findRanges } from './range';
 import { render } from './render';
 import Viewport from './viewport';
@@ -38,12 +39,17 @@ export type CellStyle = {
   padding?: [number, number];
 };
 
-export type Cell = {
-  value: string | number;
-  type?: string;
-  style?: number;
-  [property: string]: any
-} | string | number | null | undefined;
+export type Cell =
+  | {
+      value: string | number;
+      type?: string;
+      style?: number;
+      [property: string]: any;
+    }
+  | string
+  | number
+  | null
+  | undefined;
 
 export type CellFunc = (rowIndex: number, colIndex: number) => Cell;
 
@@ -96,6 +102,8 @@ export type AreaCell = {
 export type ViewportCell = {
   placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
+
+export type CellTypeRender = (canvas: Canvas, rect: Rect) => void;
 
 /**
  * ----------------------------------------------------------------
@@ -178,7 +186,7 @@ export default class TableRender {
 
   _merges: string[] = [];
 
-  _styles: CellStyle[] = [];
+  _styles: Partial<CellStyle>[] = [];
 
   _lineStyle: LineStyle = {
     width: 1,
@@ -340,7 +348,7 @@ export default class TableRender {
     return this;
   }
 
-  styles(value?: CellStyle[]) {
+  styles(value?: Partial<CellStyle>[]) {
     if (value) this._styles = value;
     return this;
   }
@@ -411,6 +419,16 @@ export default class TableRender {
 
   static create(container: string | HTMLCanvasElement, width: number, height: number) {
     return new TableRender(container, width, height);
+  }
+
+  private static _cellTypeRender = new Map();
+
+  static addCellTypeRender(type: string, cellTypeRender: CellTypeRender) {
+    this._cellTypeRender.set(type, cellTypeRender);
+  }
+
+  static getCellTypeRender(type: string) {
+    return this._cellTypeRender.get(type);
   }
 }
 
