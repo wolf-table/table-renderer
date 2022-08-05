@@ -1,4 +1,4 @@
-import TableRender, { Align, CellStyle, Rect, VerticalAlign, TextLineType } from '.';
+import TableRender, { Align, CellStyle, Rect, VerticalAlign, TextLineType, CellStyleBorder } from '.';
 import Canvas from './canvas';
 
 // align: left | center | right
@@ -81,6 +81,16 @@ function fontString(family: string, size: number, italic: boolean, bold: boolean
   return undefined;
 }
 
+export function cellBorderRender(canvas: Canvas, rect: Rect, border: CellStyleBorder) {
+  const { top, right, bottom, left } = border;
+  canvas.save().translate(rect.x, rect.y);
+  if (top) canvas.line(0, 0, rect.width, 0, { type: top[0], color: top[1] });
+  if (right) canvas.line(rect.width, 0, rect.width, rect.height, { type: right[0], color: right[1] });
+  if (bottom) canvas.line(0, rect.height, rect.width, rect.height, { type: bottom[0], color: bottom[1] });
+  if (left) canvas.line(0, 0, 0, rect.height, { type: left[0], color: left[1] });
+  canvas.restore();
+}
+
 // canvas: Canvas2d
 // style:
 export function cellRender(canvas: Canvas, text: string, rect: Rect, style: CellStyle, type?: string) {
@@ -102,17 +112,6 @@ export function cellRender(canvas: Canvas, text: string, rect: Rect, style: Cell
   } = style;
   // at first move to (left, top)
   canvas.save().beginPath().translate(rect.x, rect.y);
-
-  // border
-  if (border) {
-    const { top, right, bottom, left } = border;
-    canvas.save();
-    if (top) canvas.line(0, 0, rect.width, 0, { type: top[0], color: top[1] });
-    if (right) canvas.line(rect.width, 0, rect.width, rect.height, { type: right[0], color: right[1] });
-    if (bottom) canvas.line(0, rect.height, rect.width, rect.height, { type: bottom[0], color: bottom[1] });
-    if (left) canvas.line(0, 0, 0, rect.height, { type: left[0], color: left[1] });
-    canvas.restore();
-  }
 
   // clip
   canvas.attr('fillStyle', bgcolor).rect(0, 0, rect.width, rect.height).clip().fill();
@@ -183,6 +182,9 @@ export function cellRender(canvas: Canvas, text: string, rect: Rect, style: Cell
   }
 
   canvas.restore();
+
+  // render border
+  if (border) cellBorderRender(canvas, rect, border);
 }
 
 export default {};

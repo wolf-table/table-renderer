@@ -17,6 +17,13 @@ export type LineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
 
 export type TextLineType = 'underline' | 'strikethrough';
 
+export type CellStyleBorder = {
+  left?: [LineType, string];
+  top?: [LineType, string];
+  right?: [LineType, string];
+  bottom?: [LineType, string];
+};
+
 export type CellStyle = {
   bgcolor: string;
   align: Align;
@@ -30,12 +37,7 @@ export type CellStyle = {
   fontSize: number;
   fontName: string;
   rotate?: number;
-  border?: {
-    left?: [LineType, string];
-    top?: [LineType, string];
-    right?: [LineType, string];
-    bottom?: [LineType, string];
-  };
+  border?: CellStyleBorder;
   padding?: [number, number];
 };
 

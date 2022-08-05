@@ -12,25 +12,17 @@ function renderLines(canvas: Canvas, { width, color }: LineStyle, cb: () => void
   }
 }
 
-function renderCell(
-  canvas: Canvas,
-  cell: Cell,
-  rect: Rect,
-  defaultStyle: CellStyle,
-  styles: Partial<CellStyle>[]
-) {
+function renderCell(canvas: Canvas, cell: Cell, rect: Rect, cellStyle: CellStyle) {
   let text = '';
-  let nstyle = defaultStyle;
   let type = undefined;
   if (cell) {
     if (typeof cell === 'string' || typeof cell === 'number') text = `${cell}`;
     else {
       type = cell.type;
       text = (cell.value || '') + '';
-      if (cell.style !== undefined) nstyle = { ...defaultStyle, ...styles[cell.style] };
     }
   }
-  cellRender(canvas, text, rect, nstyle, type);
+  cellRender(canvas, text, rect, cellStyle, type);
 }
 
 function renderGridLines(canvas: Canvas, area: Area, lineStyle: LineStyle) {
@@ -62,7 +54,7 @@ function renderArea(
 
   canvas.rect(0, 0, area.width, area.height).clip();
 
-  const mergeCellStyle = (r: number, c: number) => {
+  const mergeCellStyle = (r: number, c: number, ce: Cell) => {
     const cstyle = { ...defaultCellStyle };
     if (row) {
       const r1 = row(r);
@@ -72,12 +64,17 @@ function renderArea(
       const c1 = col(c);
       if (c1 && c1.style !== undefined) Object.assign(cstyle, styles[c1.style]);
     }
+    if (ce instanceof Object && ce.style !== undefined) {
+      Object.assign(cstyle, styles[ce.style]);
+    }
     return cstyle;
   };
 
   // render cells
   area.each((r, c, rect) => {
-    renderCell(canvas, cell(r, c), rect, mergeCellStyle(r, c), styles);
+    const cellv = cell(r, c);
+    const cellStyle = mergeCellStyle(r, c, cellv);
+    renderCell(canvas, cellv, rect, cellStyle);
   });
 
   // render lines
@@ -87,13 +84,14 @@ function renderArea(
   if (merges) {
     eachRanges(merges, (it) => {
       if (it.intersects(area.range)) {
-        renderCell(
-          canvas,
-          cell(it.startRow, it.startCol),
-          area.rect(it, defaultLineStyle.width),
-          mergeCellStyle(it.startRow, it.startCol),
-          styles
-        );
+        const cellv = cell(it.startRow, it.startCol);
+        const cellStyle = mergeCellStyle(it.startRow, it.startCol, cellv);
+        let zoomPx = defaultLineStyle.width;
+        if (cellStyle.border) {
+          zoomPx = 2;
+        }
+        const cellRect = area.rect(it);
+        renderCell(canvas, cellv, cellRect, cellStyle);
       }
     });
   }

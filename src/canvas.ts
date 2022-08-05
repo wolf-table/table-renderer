@@ -94,7 +94,7 @@ export default class Canvas {
     style?: { type: 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted'; color: string }
   ) {
     if (style) {
-      this.attr({ lineWidth: 1, strokeStyle: style.color });
+      this.beginPath().attr({ lineWidth: 1, strokeStyle: style.color });
       if (style.type === 'medium') {
         this.attr({ lineWidth: 2 });
       } else if (style.type === 'thick') {

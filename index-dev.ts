@@ -1,7 +1,10 @@
-import TableRender from './src';
-const longText = 'you are a good boy, a very good boy-------!!!';
+import TableRender, { Cell } from './src';
+const longText = {
+  value: 'you are a good boy, a very good boy-------!!!',
+  style: 0,
+};
 
-function cellText(ri: number, ci: number): string {
+function cellText(ri: number, ci: number): string | Cell {
   return ri === 8 && ci === 1 ? longText : `${ri}-${ci}`;
 }
 
@@ -12,6 +15,7 @@ TableRender.create('#table', 800, 500)
   .startRow(1)
   .rows(20)
   .cols(9)
+  .styles([{ bold: true, border: { left: ['thick', '#34a853'], top: ['thick', '#ea4436'] } }])
   .col((index) => (index == 5 ? { width: 100, hide: true } : undefined))
   .freeze('C6')
   .scrollRows(2)
