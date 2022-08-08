@@ -1,5 +1,13 @@
-import TableRender, { Align, CellStyle, Rect, VerticalAlign, TextLineType, CellStyleBorder } from '.';
-import Canvas from './canvas';
+import TableRender, {
+  Align,
+  CellStyle,
+  Rect,
+  VerticalAlign,
+  TextLineType,
+  CellStyleBorder,
+  LineType,
+} from '.';
+import Canvas, { borderLineTypeToWidth } from './canvas';
 
 // align: left | center | right
 // width: the width of cell
@@ -81,12 +89,34 @@ function fontString(family: string, size: number, italic: boolean, bold: boolean
   return undefined;
 }
 
-export function cellBorderRender(canvas: Canvas, rect: Rect, border: CellStyleBorder) {
-  const { top, right, bottom, left } = border;
+export function cellBorderRender(
+  canvas: Canvas,
+  rect: Rect,
+  border: CellStyleBorder | [LineType, string],
+  autoAlign: boolean = false
+) {
+  let top, right, bottom, left;
+  if (Array.isArray(border)) {
+    top = right = bottom = left = border;
+  } else {
+    ({ top, right, bottom, left } = border);
+  }
+  let offset = 0;
+  if (top && autoAlign) {
+    offset = borderLineTypeToWidth(top[0]) / 2;
+  }
   canvas.save().translate(rect.x, rect.y);
-  if (top) canvas.line(0, 0, rect.width, 0, { type: top[0], color: top[1] });
-  if (right) canvas.line(rect.width, 0, rect.width, rect.height, { type: right[0], color: right[1] });
-  if (bottom) canvas.line(0, rect.height, rect.width, rect.height, { type: bottom[0], color: bottom[1] });
+  if (top) canvas.line(0 - offset, 0, rect.width + offset, 0, { type: top[0], color: top[1] });
+  if (right)
+    canvas.line(rect.width, 0, rect.width, rect.height, {
+      type: right[0],
+      color: right[1],
+    });
+  if (bottom)
+    canvas.line(0 - offset, rect.height, rect.width + offset, rect.height, {
+      type: bottom[0],
+      color: bottom[1],
+    });
   if (left) canvas.line(0, 0, 0, rect.height, { type: left[0], color: left[1] });
   canvas.restore();
 }
@@ -95,7 +125,6 @@ export function cellBorderRender(canvas: Canvas, rect: Rect, border: CellStyleBo
 // style:
 export function cellRender(canvas: Canvas, text: string, rect: Rect, style: CellStyle, type?: string) {
   const {
-    border,
     fontSize,
     fontName,
     bold,
@@ -182,9 +211,6 @@ export function cellRender(canvas: Canvas, text: string, rect: Rect, style: Cell
   }
 
   canvas.restore();
-
-  // render border
-  if (border) cellBorderRender(canvas, rect, border);
 }
 
 export default {};

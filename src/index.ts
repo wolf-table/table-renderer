@@ -24,6 +24,20 @@ export type CellStyleBorder = {
   bottom?: [LineType, string];
 };
 
+export type BorderType =
+  | 'all'
+  | 'inside'
+  | 'horizontal'
+  | 'vertical'
+  | 'outside'
+  | 'left'
+  | 'top'
+  | 'right'
+  | 'bottom'
+  | 'none';
+// ref, type, line-type, line-color
+export type Border = [string, BorderType, LineType, string];
+
 export type CellStyle = {
   bgcolor: string;
   align: Align;
@@ -37,7 +51,6 @@ export type CellStyle = {
   fontSize: number;
   fontName: string;
   rotate?: number;
-  border?: CellStyleBorder;
   padding?: [number, number];
 };
 
@@ -187,6 +200,8 @@ export default class TableRender {
   _cell: CellFunc = () => undefined;
 
   _merges: string[] = [];
+
+  _borders: Border[] = [];
 
   _styles: Partial<CellStyle>[] = [];
 
@@ -352,6 +367,11 @@ export default class TableRender {
 
   styles(value?: Partial<CellStyle>[]) {
     if (value) this._styles = value;
+    return this;
+  }
+
+  borders(value?: Border[]) {
+    if (value) this._borders = value;
     return this;
   }
 

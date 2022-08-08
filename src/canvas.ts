@@ -32,6 +32,14 @@ type CompositingAttrs = {
 
 type Attrs = LineStyleAttrs & TextStyleAttrs & FillStrokeStyleAttrs & ShadowAttrs & CompositingAttrs;
 
+type BorderLineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
+
+export function borderLineTypeToWidth(lineType: BorderLineType) {
+  if (lineType === 'medium') return 2;
+  else if (lineType === 'thick') return 3;
+  return 1;
+}
+
 export default class Canvas {
   _target: HTMLCanvasElement;
   _ctx: CanvasRenderingContext2D;
@@ -86,13 +94,7 @@ export default class Canvas {
   }
 
   // draw line
-  line(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    style?: { type: 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted'; color: string }
-  ) {
+  line(x1: number, y1: number, x2: number, y2: number, style?: { type: BorderLineType; color: string }) {
     if (style) {
       this.beginPath().attr({ lineWidth: 1, strokeStyle: style.color });
       if (style.type === 'medium') {

@@ -111,15 +111,9 @@ export default class Area {
     return { x, y: 0, width, height };
   }
 
-  rect(r: Range, zoomPx?: number) {
+  rect(r: Range) {
     let { y, height } = this.rectRow(r.startRow, r.endRow);
     let { x, width } = this.rectCol(r.startCol, r.endCol);
-    if (zoomPx !== undefined) {
-      x += zoomPx / 2;
-      y += zoomPx / 2;
-      height -= zoomPx;
-      width -= zoomPx;
-    }
     return { x, y, width, height };
   }
 

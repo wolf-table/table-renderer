@@ -1,7 +1,8 @@
+import { create } from 'domain';
 import { expr2xy, xy2expr } from './alphabet';
 
 /**
- * the range specified by a start position and an end position,
+ * the range spendColfied by a start position and an end position,
  * the smallest range must contain at least one cell.
  * Range is not a merged cell, but it can be merged as a single cell
  * @author myliang
@@ -115,6 +116,20 @@ export default class Range {
       other.endRow > this.endRow ? other.endRow : this.endRow,
       other.endCol > this.endCol ? other.endCol : this.endCol
     );
+  }
+
+  // Returns Array<CellRange> that represents that part of this that does not intersect with other
+  // difference
+  difference(other: Range): Range[] {
+    const ret: Range[] = [];
+    if (!this.intersects(other)) return [];
+    const { startRow, startCol, endRow, endCol } = this;
+    return [
+      new Range(startRow, startCol, other.startRow - 1, endCol), // top
+      new Range(other.endRow + 1, startCol, endRow, endCol), // bottom
+      new Range(other.startRow, startCol, other.endRow, other.startCol - 1), // left
+      new Range(other.startRow, other.endCol + 1, other.endRow, endCol), // right
+    ].filter((it) => it.rows >= 0 && it.cols >= 0);
   }
 
   /**

@@ -1,8 +1,20 @@
 import Area from './area';
-import Canvas from './canvas';
-import { cellRender } from './cell-render';
-import { eachRanges } from './range';
-import TableRender, { Cell, CellFunc, CellStyle, ColFunc, LineStyle, Rect, RowFunc } from '.';
+import Canvas, { borderLineTypeToWidth } from './canvas';
+import { cellRender, cellBorderRender } from './cell-render';
+import Range, { eachRanges } from './range';
+import TableRender, {
+  Cell,
+  CellFunc,
+  CellStyle,
+  ColFunc,
+  LineStyle,
+  Rect,
+  RowFunc,
+  Border,
+  LineType,
+  BorderType,
+} from '.';
+import { rejects } from 'assert';
 
 function renderLines(canvas: Canvas, { width, color }: LineStyle, cb: () => void) {
   if (width > 0) {
@@ -38,6 +50,103 @@ function renderGridLines(canvas: Canvas, area: Area, lineStyle: LineStyle) {
   });
 }
 
+function renderBorder(
+  canvas: Canvas,
+  range: Range,
+  area: Area,
+  borderRect: Rect,
+  type: BorderType,
+  lineType: LineType,
+  lineColor: string,
+  autoAlign?: boolean
+) {
+  const borderLineStyle = [lineType, lineColor] as [LineType, string];
+  // if type === 'none', you can delete borders in ref(range)
+  if (type === 'outside' || type === 'all') {
+    cellBorderRender(canvas, borderRect, borderLineStyle, true);
+  } else if (type === 'left') {
+    cellBorderRender(canvas, borderRect, { left: borderLineStyle }, autoAlign);
+  } else if (type === 'top') {
+    cellBorderRender(canvas, borderRect, { top: borderLineStyle }, autoAlign);
+  } else if (type === 'right') {
+    cellBorderRender(canvas, borderRect, { right: borderLineStyle }, autoAlign);
+  } else if (type === 'bottom') {
+    cellBorderRender(canvas, borderRect, { bottom: borderLineStyle }, autoAlign);
+  }
+  if (type === 'all' || type === 'inside' || type === 'horizontal' || type === 'vertical') {
+    if (type !== 'horizontal') {
+      range.eachCol((index) => {
+        if (index < range.endCol) {
+          const r1 = range.clone();
+          r1.endCol = r1.startCol = index;
+          cellBorderRender(canvas, area.rect(r1), { right: borderLineStyle }, autoAlign);
+        }
+      });
+    }
+    if (type !== 'vertical') {
+      range.eachRow((index) => {
+        if (index < range.endRow) {
+          const r1 = range.clone();
+          r1.endRow = r1.startRow = index;
+          cellBorderRender(canvas, area.rect(r1), { bottom: borderLineStyle }, autoAlign);
+        }
+      });
+    }
+  }
+}
+
+function renderBorders(canvas: Canvas, area: Area, borders: Border[] | undefined, areaMerges: Range[]) {
+  // render borders
+  if (borders && borders.length > 0) {
+    // borders slice by merges
+    if (areaMerges.length > 0) {
+      borders.forEach(([ref, type, lineType, lineColor]) => {
+        const bRange = Range.with(ref);
+        if (bRange.intersects(area.range)) {
+          let intersects = false;
+          areaMerges.forEach((merge) => {
+            if (bRange.within(merge)) {
+              intersects = true;
+              renderBorder(
+                canvas,
+                merge,
+                area,
+                area.rect(merge),
+                bRange.equals(merge) ? 'outside' : type,
+                lineType,
+                lineColor
+              );
+            } else if (merge.intersects(bRange)) {
+              intersects = true;
+              // console.log('bRange:', bRange, merge, area, bRange.difference(merge));
+              bRange.difference(merge).forEach((it) => {
+                if (it.intersects(area.range))
+                  renderBorder(canvas, it, area, area.rect(it), type, lineType, lineColor);
+              });
+              const borderRect = area.rect(merge);
+              if (bRange.startRow === merge.startRow) {
+                renderBorder(canvas, merge, area, borderRect, 'top', lineType, lineColor, true);
+              }
+              if (bRange.startCol === merge.startCol) {
+                renderBorder(canvas, merge, area, borderRect, 'left', lineType, lineColor, true);
+              }
+              if (bRange.endRow === merge.endRow) {
+                renderBorder(canvas, merge, area, borderRect, 'bottom', lineType, lineColor, true);
+              }
+              if (bRange.endCol === merge.endCol) {
+                renderBorder(canvas, merge, area, borderRect, 'right', lineType, lineColor, true);
+              }
+            }
+          });
+          if (!intersects) {
+            renderBorder(canvas, bRange, area, area.rect(bRange), type, lineType, lineColor);
+          }
+        }
+      });
+    }
+  }
+}
+
 function renderArea(
   canvas: Canvas,
   area: Area | null,
@@ -45,7 +154,8 @@ function renderArea(
   defaultCellStyle: CellStyle,
   defaultLineStyle: LineStyle,
   styles: Partial<CellStyle>[],
-  merges?: string[] | null,
+  merges?: string[],
+  borders?: Border[],
   row?: RowFunc,
   col?: ColFunc
 ) {
@@ -80,21 +190,23 @@ function renderArea(
   // render lines
   renderGridLines(canvas, area, defaultLineStyle);
 
+  const areaMerges: Range[] = [];
   // render merges
   if (merges) {
     eachRanges(merges, (it) => {
       if (it.intersects(area.range)) {
         const cellv = cell(it.startRow, it.startCol);
         const cellStyle = mergeCellStyle(it.startRow, it.startCol, cellv);
-        let zoomPx = defaultLineStyle.width;
-        if (cellStyle.border) {
-          zoomPx = 2;
-        }
         const cellRect = area.rect(it);
         renderCell(canvas, cellv, cellRect, cellStyle);
+        areaMerges.push(it);
       }
     });
   }
+
+  // render borders
+  renderBorders(canvas, area, borders, areaMerges);
+
   canvas.restore();
 }
 
@@ -107,6 +219,7 @@ function renderBody(canvas: Canvas, area: Area | null, table: TableRender) {
     table._lineStyle,
     table._styles,
     table._merges,
+    table._borders,
     table._row,
     table._col
   );
