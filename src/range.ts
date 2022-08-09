@@ -1,4 +1,3 @@
-import { create } from 'domain';
 import { expr2xy, xy2expr } from './alphabet';
 
 /**

@@ -19,17 +19,13 @@ export default class Area {
     // init width, height and set rowMap, colMap
     range.eachRow((index) => {
       const height = rowHeight(index);
-      if (height > 0) {
-        this.rowMap.set(index, { y: this.height, height });
-        this.height += height;
-      }
+      this.rowMap.set(index, { y: this.height, height });
+      this.height += height;
     });
     range.eachCol((index) => {
       const width = colWidth(index);
-      if (width > 0) {
-        this.colMap.set(index, { x: this.width, width });
-        this.width += width;
-      }
+      this.colMap.set(index, { x: this.width, width });
+      this.width += width;
     });
   }
 

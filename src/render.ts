@@ -1,7 +1,8 @@
 import Area from './area';
-import Canvas, { borderLineTypeToWidth } from './canvas';
+import Canvas from './canvas';
 import { cellRender, cellBorderRender } from './cell-render';
 import Range, { eachRanges } from './range';
+import { borderRanges } from './border';
 import TableRender, {
   Cell,
   CellFunc,
@@ -52,8 +53,8 @@ function renderGridLines(canvas: Canvas, area: Area, lineStyle: LineStyle) {
 
 function renderBorder(
   canvas: Canvas,
-  range: Range,
   area: Area,
+  range: Range,
   borderRect: Rect,
   type: BorderType,
   lineType: LineType,
@@ -79,7 +80,9 @@ function renderBorder(
         if (index < range.endCol) {
           const r1 = range.clone();
           r1.endCol = r1.startCol = index;
-          cellBorderRender(canvas, area.rect(r1), { right: borderLineStyle }, autoAlign);
+          if (r1.intersects(area.range)) {
+            cellBorderRender(canvas, area.rect(r1), { right: borderLineStyle }, autoAlign);
+          }
         }
       });
     }
@@ -88,7 +91,9 @@ function renderBorder(
         if (index < range.endRow) {
           const r1 = range.clone();
           r1.endRow = r1.startRow = index;
-          cellBorderRender(canvas, area.rect(r1), { bottom: borderLineStyle }, autoAlign);
+          if (r1.intersects(area.range)) {
+            cellBorderRender(canvas, area.rect(r1), { bottom: borderLineStyle }, autoAlign);
+          }
         }
       });
     }
@@ -98,52 +103,12 @@ function renderBorder(
 function renderBorders(canvas: Canvas, area: Area, borders: Border[] | undefined, areaMerges: Range[]) {
   // render borders
   if (borders && borders.length > 0) {
-    // borders slice by merges
-    if (areaMerges.length > 0) {
-      borders.forEach(([ref, type, lineType, lineColor]) => {
-        const bRange = Range.with(ref);
-        if (bRange.intersects(area.range)) {
-          let intersects = false;
-          areaMerges.forEach((merge) => {
-            if (bRange.within(merge)) {
-              intersects = true;
-              renderBorder(
-                canvas,
-                merge,
-                area,
-                area.rect(merge),
-                bRange.equals(merge) ? 'outside' : type,
-                lineType,
-                lineColor
-              );
-            } else if (merge.intersects(bRange)) {
-              intersects = true;
-              // console.log('bRange:', bRange, merge, area, bRange.difference(merge));
-              bRange.difference(merge).forEach((it) => {
-                if (it.intersects(area.range))
-                  renderBorder(canvas, it, area, area.rect(it), type, lineType, lineColor);
-              });
-              const borderRect = area.rect(merge);
-              if (bRange.startRow === merge.startRow) {
-                renderBorder(canvas, merge, area, borderRect, 'top', lineType, lineColor, true);
-              }
-              if (bRange.startCol === merge.startCol) {
-                renderBorder(canvas, merge, area, borderRect, 'left', lineType, lineColor, true);
-              }
-              if (bRange.endRow === merge.endRow) {
-                renderBorder(canvas, merge, area, borderRect, 'bottom', lineType, lineColor, true);
-              }
-              if (bRange.endCol === merge.endCol) {
-                renderBorder(canvas, merge, area, borderRect, 'right', lineType, lineColor, true);
-              }
-            }
-          });
-          if (!intersects) {
-            renderBorder(canvas, bRange, area, area.rect(bRange), type, lineType, lineColor);
-          }
-        }
+    borders.forEach((border) => {
+      const [, , lineType, lineColor] = border;
+      borderRanges(area, border, areaMerges).forEach(([range, rect, type]) => {
+        renderBorder(canvas, area, range, rect, type, lineType, lineColor);
       });
-    }
+    });
   }
 }
 

@@ -462,7 +462,9 @@ declare global {
   }
 }
 
-if (window) {
-  window.wolf ||= {};
-  window.wolf.table_render = TableRender.create;
-}
+try {
+  if (window) {
+    window.wolf ||= {};
+    window.wolf.table_render = TableRender.create;
+  }
+} catch (e) {}
