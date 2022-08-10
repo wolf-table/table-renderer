@@ -35,30 +35,23 @@ export function borderRanges(area: Area, [ref, type]: Border, areaMerges: Range[
             if (it.intersects(area.range)) {
               const borderRect = area.rect(it);
               ret.push([it, borderRect, type]);
-              // renderBorder(canvas, area, it, borderRect, type, lineType, lineColor);
-              if (type !== 'all') {
-                if (type === 'inside' || type === 'horizontal') {
-                  if (it.startRow < merge.startRow && it.endRow < merge.startRow) {
-                    // top
-                    ret.push([it, borderRect, 'bottom']);
-                    // renderBorder(canvas, area, it, borderRect, 'bottom', lineType, lineColor);
-                  } else if (it.startRow > merge.startRow && it.endRow > merge.startRow) {
-                    // bottom
-                    ret.push([it, borderRect, 'top']);
-                    // renderBorder(canvas, area, it, borderRect, 'top', lineType, lineColor);
-                  }
+              if (type === 'inside' || type === 'horizontal') {
+                if (it.startRow < merge.startRow && it.endRow < merge.startRow) {
+                  // top
+                  ret.push([it, borderRect, 'bottom']);
+                } else if (it.startRow > merge.startRow && it.endRow > merge.startRow) {
+                  // bottom
+                  ret.push([it, borderRect, 'top']);
                 }
-                if (type === 'inside' || type === 'vertical') {
-                  if (it.startCol < merge.startCol && it.endCol < merge.startCol) {
-                    // left
-                    ret.push([it, borderRect, 'right']);
-                    // renderBorder(canvas, area, it, borderRect, 'right', lineType, lineColor);
-                  }
-                  if (it.startCol > merge.startCol && it.endCol > merge.startCol) {
-                    // right
-                    ret.push([it, borderRect, 'left']);
-                    // renderBorder(canvas, area, it, borderRect, 'left', lineType, lineColor);
-                  }
+              }
+              if (type === 'inside' || type === 'vertical') {
+                if (it.startCol < merge.startCol && it.endCol < merge.startCol) {
+                  // left
+                  ret.push([it, borderRect, 'right']);
+                }
+                if (it.startCol > merge.startCol && it.endCol > merge.startCol) {
+                  // right
+                  ret.push([it, borderRect, 'left']);
                 }
               }
             }
@@ -67,19 +60,15 @@ export function borderRanges(area: Area, [ref, type]: Border, areaMerges: Range[
             const borderRect = area.rect(merge);
             if (bRange.startRow === merge.startRow) {
               ret.push([merge, borderRect, 'top']);
-              // renderBorder(canvas, area, merge, borderRect, 'top', lineType, lineColor, true);
-            }
-            if (bRange.startCol === merge.startCol) {
-              ret.push([merge, borderRect, 'left']);
-              // renderBorder(canvas, area, merge, borderRect, 'left', lineType, lineColor, true);
             }
             if (bRange.endRow === merge.endRow) {
               ret.push([merge, borderRect, 'bottom']);
-              // renderBorder(canvas, area, merge, borderRect, 'bottom', lineType, lineColor, true);
+            }
+            if (bRange.startCol === merge.startCol) {
+              ret.push([merge, borderRect, 'left']);
             }
             if (bRange.endCol === merge.endCol) {
               ret.push([merge, borderRect, 'right']);
-              // renderBorder(canvas, area, merge, borderRect, 'right', lineType, lineColor, true);
             }
           }
         }

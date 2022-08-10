@@ -1,4 +1,4 @@
-import Range, { newRange } from '../src/range';
+import Range from '../src/range';
 import { describe, it } from 'mocha';
 import assert from 'assert';
 
@@ -195,9 +195,9 @@ describe('Range', () => {
 
 describe('newRange()', () => {
   it('should be range(0, 0, 0, 0) when value is A1:A1', () => {
-    assert.deepEqual(newRange('A1:A1'), new Range(0, 0, 0, 0));
+    assert.deepEqual(Range.with('A1:A1'), new Range(0, 0, 0, 0));
   });
   it('should be range(1, 0, 9, 3) when value is A2:D10', () => {
-    assert.deepEqual(newRange('A2:D10'), new Range(1, 0, 9, 3));
+    assert.deepEqual(Range.with('A2:D10'), new Range(1, 0, 9, 3));
   });
 });

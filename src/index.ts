@@ -33,8 +33,7 @@ export type BorderType =
   | 'left'
   | 'top'
   | 'right'
-  | 'bottom'
-  | 'none';
+  | 'bottom';
 // ref, type, line-type, line-color
 export type Border = [string, BorderType, LineType, string];
 
