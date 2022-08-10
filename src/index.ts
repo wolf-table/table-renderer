@@ -117,7 +117,7 @@ export type ViewportCell = {
   placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
 
-export type CellTypeRender = (canvas: Canvas, rect: Rect) => void;
+export type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => void;
 
 /**
  * ----------------------------------------------------------------
@@ -448,7 +448,7 @@ export default class TableRender {
     this._cellTypeRender.set(type, cellTypeRender);
   }
 
-  static getCellTypeRender(type: string) {
+  static getCellTypeRender(type: string): CellTypeRender | null {
     return this._cellTypeRender.get(type);
   }
 }

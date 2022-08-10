@@ -232,6 +232,17 @@ export default class Canvas {
     return this;
   }
 
+  roundRect(x: number, y: number, width: number, height: number, radius: number) {
+    this.beginPath()
+      .moveTo(x + radius, y)
+      .arcTo(x + width, y, x + width, y + height, radius)
+      .arcTo(x + width, y + height, x, y + height, radius)
+      .arcTo(x, y + height, x, y, radius)
+      .arcTo(x, y, x + width, y, radius)
+      .closePath();
+    return this;
+  }
+
   // Drawing paths
   fill(fillRule?: CanvasFillRule) {
     this._ctx.fill(fillRule);

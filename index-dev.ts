@@ -5,8 +5,30 @@ const longText = {
 };
 
 function cellText(ri: number, ci: number): string | Cell {
-  return ri === 8 && ci === 1 ? longText : `${ri}-${ci}`;
+  if (ri === 8 && ci === 1) return longText;
+  const value = `${ri}-${ci}`;
+  if (ri === 4 && ci === 4) return { type: 'select', value };
+  if (ri === 4 && ci === 8) return { type: 'bool', value };
+  return value;
 }
+
+TableRender.addCellTypeRender('select', (canvas, { x, y, width, height }) => {
+  canvas
+    .attr({ fillStyle: '#0069c2' })
+    .beginPath()
+    .moveTo(width - 12, 2)
+    .lineTo(width - 2, 2)
+    .lineTo(width - 7, 10)
+    .closePath()
+    .fill();
+});
+
+TableRender.addCellTypeRender('bool', (canvas, { x, y, width, height }) => {
+  canvas
+    .attr({ strokeStyle: '#0069c2', lineWidth: 2 })
+    .roundRect((width - 12) / 2, height / 2 - 5, 10, 10, 2)
+    .stroke();
+});
 
 TableRender.create('#table', 1400, 500)
   .scale(1.1)
@@ -16,7 +38,7 @@ TableRender.create('#table', 1400, 500)
     ['G3', 'all', 'thick', '#188038'],
     ['B9', 'outside', 'thick', '#188038'],
     ['M4:N10', 'all', 'thick', '#188038'],
-    ['H9:K11', 'inside', 'thick', 'red'],
+    ['H9:K12', 'inside', 'thick', 'red'],
     ['E14:J16', 'all', 'thick', '#188038'],
   ])
   .startRow(1)

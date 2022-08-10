@@ -15,7 +15,6 @@ import TableRender, {
   LineType,
   BorderType,
 } from '.';
-import { rejects } from 'assert';
 
 function renderLines(canvas: Canvas, { width, color }: LineStyle, cb: () => void) {
   if (width > 0) {
@@ -23,19 +22,6 @@ function renderLines(canvas: Canvas, { width, color }: LineStyle, cb: () => void
     cb();
     canvas.restore();
   }
-}
-
-function renderCell(canvas: Canvas, cell: Cell, rect: Rect, cellStyle: CellStyle) {
-  let text = '';
-  let type = undefined;
-  if (cell) {
-    if (typeof cell === 'string' || typeof cell === 'number') text = `${cell}`;
-    else {
-      type = cell.type;
-      text = (cell.value || '') + '';
-    }
-  }
-  cellRender(canvas, text, rect, cellStyle, type);
 }
 
 function renderGridLines(canvas: Canvas, area: Area, lineStyle: LineStyle) {
@@ -149,7 +135,7 @@ function renderArea(
   area.each((r, c, rect) => {
     const cellv = cell(r, c);
     const cellStyle = mergeCellStyle(r, c, cellv);
-    renderCell(canvas, cellv, rect, cellStyle);
+    cellRender(canvas, cellv, rect, cellStyle);
   });
 
   // render lines
@@ -163,7 +149,7 @@ function renderArea(
         const cellv = cell(it.startRow, it.startCol);
         const cellStyle = mergeCellStyle(it.startRow, it.startCol, cellv);
         const cellRect = area.rect(it);
-        renderCell(canvas, cellv, cellRect, cellStyle);
+        cellRender(canvas, cellv, cellRect, cellStyle);
         areaMerges.push(it);
       }
     });
