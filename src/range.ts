@@ -104,6 +104,20 @@ export default class Range {
   }
 
   /**
+   * the self intersection the other resulting in the new range
+   * @param {Range} other
+   * @returns {Range} the new range
+   */
+  intersection(other: Range) {
+    return new Range(
+      other.startRow < this.startRow ? this.startRow : other.startRow,
+      other.startCol < this.startCol ? this.startCol : other.startCol,
+      other.endRow > this.endRow ? this.endRow : other.endRow,
+      other.endCol > this.endCol ? this.endCol : other.endCol
+    );
+  }
+
+  /**
    * the self union the other resulting in the new range
    * @param {Range} other
    * @returns {Range} the new range
@@ -123,11 +137,12 @@ export default class Range {
     const ret: Range[] = [];
     if (!this.intersects(other)) return [];
     const { startRow, startCol, endRow, endCol } = this;
+    const nOther = this.intersection(other);
     return [
-      new Range(startRow, startCol, other.startRow - 1, endCol), // top
-      new Range(other.endRow + 1, startCol, endRow, endCol), // bottom
-      new Range(other.startRow, startCol, other.endRow, other.startCol - 1), // left
-      new Range(other.startRow, other.endCol + 1, other.endRow, endCol), // right
+      new Range(startRow, startCol, nOther.startRow - 1, endCol), // top
+      new Range(nOther.endRow + 1, startCol, endRow, endCol), // bottom
+      new Range(nOther.startRow, startCol, nOther.endRow, nOther.startCol - 1), // left
+      new Range(nOther.startRow, nOther.endCol + 1, nOther.endRow, endCol), // right
     ].filter((it) => it.rows >= 0 && it.cols >= 0);
   }
 

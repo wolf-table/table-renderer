@@ -1,7 +1,7 @@
 import { Border, Area, Rect, BorderType } from '.';
 import Range from './range';
 
-export function borderRanges(area: Area, [ref, type]: Border, areaMerges: Range[]) {
+export function borderRanges(area: Area, [ref, type, ...borderOther]: Border, areaMerges: Range[]) {
   // render borders
   const ret: [Range, Rect, BorderType][] = [];
   const bRange = Range.with(ref);
@@ -31,10 +31,11 @@ export function borderRanges(area: Area, [ref, type]: Border, areaMerges: Range[
           ret.push([bRange, area.rect(bRange), type]);
           break;
         } else {
+          const imerges = intersectMerges.filter((it) => !it.equals(merge));
           bRange.difference(merge).forEach((it) => {
             if (it.intersects(area.range)) {
               const borderRect = area.rect(it);
-              ret.push([it, borderRect, type]);
+              ret.push(...borderRanges(area, [it.toString(), type, ...borderOther], imerges));
               if (type === 'inside' || type === 'horizontal') {
                 if (it.startRow < merge.startRow && it.endRow < merge.startRow) {
                   // top
@@ -71,6 +72,7 @@ export function borderRanges(area: Area, [ref, type]: Border, areaMerges: Range[
               ret.push([merge, borderRect, 'right']);
             }
           }
+          break;
         }
       }
     }

@@ -43,7 +43,7 @@ export default class Area {
         width: number;
         height: number;
     };
-    rect(r: Range, zoomPx?: number): {
+    rect(r: Range): {
         x: number;
         y: number;
         width: number;

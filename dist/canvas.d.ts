@@ -26,6 +26,8 @@ declare type CompositingAttrs = {
     globalCompositeOperation: string;
 };
 declare type Attrs = LineStyleAttrs & TextStyleAttrs & FillStrokeStyleAttrs & ShadowAttrs & CompositingAttrs;
+declare type BorderLineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
+export declare function borderLineTypeToWidth(lineType: BorderLineType): 1 | 2 | 3;
 export default class Canvas {
     readonly target: HTMLCanvasElement;
     _target: HTMLCanvasElement;
@@ -38,7 +40,7 @@ export default class Canvas {
     attr(key: keyof Attrs, value: any): Canvas;
     measureTextWidth(text: string): number;
     line(x1: number, y1: number, x2: number, y2: number, style?: {
-        type: 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
+        type: BorderLineType;
         color: string;
     }): this;
     clearRect(x: number, y: number, width: number, height: number): this;
@@ -62,6 +64,7 @@ export default class Canvas {
     arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this;
     ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean): this;
     rect(x: number, y: number, width: number, height: number): this;
+    roundRect(x: number, y: number, width: number, height: number, radius: number): this;
     fill(fillRule?: CanvasFillRule): this;
     stroke(): this;
     clip(fillRule?: CanvasFillRule): this;

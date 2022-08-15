@@ -1,5 +1,5 @@
 /**
- * the range specified by a start position and an end position,
+ * the range spendColfied by a start position and an end position,
  * the smallest range must contain at least one cell.
  * Range is not a merged cell, but it can be merged as a single cell
  * @author myliang
@@ -60,6 +60,7 @@ export default class Range {
      * @returns {Range} the new range
      */
     union(other: Range): Range;
+    difference(other: Range): Range[];
     /**
      * @param {Function} cb (row) => {}
      * @returns this

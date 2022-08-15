@@ -276,5 +276,14 @@ describe('borderRanges', () => {
         }
       });
     });
+
+    // there are merges in a border
+    const ref = 'A6:M13';
+    it(`and border is ['${ref}', 'all', 'thick', '#188038']`, () => {
+      const border: Border = [ref, 'all', 'thick', '#188038'];
+      let ret = borderRanges(area, border, areaMerges);
+      ret.forEach((it) => console.log(it.toString()));
+      assert.equal(ret.length, 8);
+    });
   });
 });

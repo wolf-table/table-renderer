@@ -11,6 +11,14 @@ export declare type LineStyle = {
 };
 export declare type LineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
 export declare type TextLineType = 'underline' | 'strikethrough';
+export declare type CellStyleBorder = {
+    left?: [LineType, string];
+    top?: [LineType, string];
+    right?: [LineType, string];
+    bottom?: [LineType, string];
+};
+export declare type BorderType = 'all' | 'inside' | 'horizontal' | 'vertical' | 'outside' | 'left' | 'top' | 'right' | 'bottom';
+export declare type Border = [string, BorderType, LineType, string];
 export declare type CellStyle = {
     bgcolor: string;
     align: Align;
@@ -24,12 +32,6 @@ export declare type CellStyle = {
     fontSize: number;
     fontName: string;
     rotate?: number;
-    border?: {
-        left?: [LineType, string];
-        top?: [LineType, string];
-        right?: [LineType, string];
-        bottom?: [LineType, string];
-    };
     padding?: [number, number];
 };
 export declare type Cell = {
@@ -80,7 +82,7 @@ export declare type AreaCell = {
 export declare type ViewportCell = {
     placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
-export declare type CellTypeRender = (canvas: Canvas, rect: Rect) => void;
+export declare type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => void;
 /**
  * ----------------------------------------------------------------
  * |            | column header                                   |
@@ -135,6 +137,7 @@ export default class TableRender {
      */
     _cell: CellFunc;
     _merges: string[];
+    _borders: Border[];
     _styles: Partial<CellStyle>[];
     _lineStyle: LineStyle;
     _cellStyle: CellStyle;
@@ -163,6 +166,7 @@ export default class TableRender {
     cell(value: (rowIndex: number, colIndex: number) => Cell): this;
     merges(value?: string[]): this;
     styles(value?: Partial<CellStyle>[]): this;
+    borders(value?: Border[]): this;
     lineStyle(value: Partial<LineStyle>): this;
     cellStyle(value: Partial<CellStyle>): this;
     rowHeader(value?: Partial<RowHeader>): this;
@@ -177,7 +181,7 @@ export default class TableRender {
     static create(container: string | HTMLCanvasElement, width: number, height: number): TableRender;
     private static _cellTypeRender;
     static addCellTypeRender(type: string, cellTypeRender: CellTypeRender): void;
-    static getCellTypeRender(type: string): any;
+    static getCellTypeRender(type: string): CellTypeRender | null;
 }
 export { expr2xy, xy2expr, stringAt, Range, Viewport, Area, eachRanges, findRanges };
 declare global {
