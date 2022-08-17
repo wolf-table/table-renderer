@@ -55,6 +55,12 @@ export default class Range {
      */
     intersects({ startRow, startCol, endRow, endCol }: Range): boolean;
     /**
+     * the self intersection the other resulting in the new range
+     * @param {Range} other
+     * @returns {Range} the new range
+     */
+    intersection(other: Range): Range;
+    /**
      * the self union the other resulting in the new range
      * @param {Range} other
      * @returns {Range} the new range

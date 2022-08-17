@@ -213,7 +213,7 @@ export default class TableRender {
     bgcolor: '#ffffff',
     align: 'left',
     valign: 'middle',
-    textwrap: true,
+    textwrap: false,
     underline: false,
     strikethrough: false,
     color: '#0a0a0a',
