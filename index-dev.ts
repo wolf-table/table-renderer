@@ -9,7 +9,7 @@ function cellText(ri: number, ci: number): string | Cell {
   const value = `${ri}-${ci}`;
   if (ri === 4 && ci === 4) return { type: 'select', value };
   if (ri === 4 && ci === 8) return { type: 'bool', value };
-  return value;
+  return value + '\nss';
 }
 
 TableRender.addCellTypeRender('select', (canvas, { x, y, width, height }) => {
@@ -31,7 +31,7 @@ TableRender.addCellTypeRender('bool', (canvas, { x, y, width, height }) => {
 });
 
 TableRender.create('#table', 1400, 800)
-  .scale(1.1)
+  .scale(1)
   .colHeader({ height: 50, rows: 2, merges: ['A1:C1', 'D1:D2'] })
   .merges(['I10:J11', 'B9:D10', 'G21:H22', 'J22:L23'])
   .borders([

@@ -30,12 +30,14 @@ function textx(align: Align, width: number, padding: number) {
 // height: the height of cell
 // txtHeight: the height of text
 // padding: the padding of cell
-function texty(align: VerticalAlign, height: number, txtHeight: number, padding: number) {
+function texty(align: VerticalAlign, height: number, txtHeight: number, fontHeight: number, padding: number) {
   switch (align) {
     case 'top':
       return padding;
     case 'middle':
-      return height / 2 - txtHeight / 2;
+      let y = height / 2 - txtHeight / 2;
+      const minHeight = fontHeight / 2 + padding;
+      return y < minHeight ? minHeight : y;
     case 'bottom':
       return height - padding - txtHeight;
     default:
@@ -208,19 +210,19 @@ export function cellRender(canvas: Canvas, cell: Cell, rect: Rect, style: CellSt
       }
     });
 
-    const lineHeight = fontSize * 1.425;
-    const txtHeight = (ntxts.length - 1) * lineHeight;
+    const fontHeight = fontSize / 0.75; // pt => px
+    const txtHeight = (ntxts.length - 1) * fontHeight;
     const lineTypes: TextLineType[] = [];
     if (underline) lineTypes.push('underline');
     if (strikethrough) lineTypes.push('strikethrough');
-    let ty = texty(valign, rect.height, txtHeight, yp);
+    let ty = texty(valign, rect.height, txtHeight, fontHeight, yp);
     ntxts.forEach((it) => {
       const txtWidth = canvas.measureTextWidth(it);
       canvas.fillText(it, tx, ty);
       lineTypes.forEach((type) => {
         canvas.line(...textLine(type, align, valign, tx, ty, txtWidth, fontSize));
       });
-      ty += lineHeight;
+      ty += fontHeight;
     });
     canvas.restore();
   }

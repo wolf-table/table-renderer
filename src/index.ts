@@ -159,7 +159,7 @@ export default class TableRender {
   _cols = 26;
 
   // the row height (px)
-  _rowHeight = 25;
+  _rowHeight = 22;
 
   // the column width (px)
   _colWidth = 100;
@@ -220,7 +220,7 @@ export default class TableRender {
     bold: false,
     italic: false,
     rotate: 0,
-    fontSize: 9,
+    fontSize: 10,
     fontName: 'Source Sans Pro',
   };
 
@@ -235,7 +235,7 @@ export default class TableRender {
 
   // column header
   _colHeader: ColHeader = {
-    height: 25,
+    height: 24,
     rows: 1,
     cell(rowIndex, colIndex) {
       return stringAt(colIndex);
@@ -258,7 +258,7 @@ export default class TableRender {
     bold: false,
     italic: false,
     rotate: 0,
-    fontSize: 9,
+    fontSize: 10,
     fontName: 'Source Sans Pro',
   };
 
