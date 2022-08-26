@@ -143,6 +143,15 @@ export default class Viewport {
     ];
   }
 
+  inAreas(row: number, col: number) {
+    for (let it of this.areas) {
+      if (it.range.contains(row, col)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   cellAt(x: number, y: number): ViewportCell | null {
     const a2 = this.areas[1];
     const [ha1, ha21, ha23, ha3] = this.headerAreas;

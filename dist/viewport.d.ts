@@ -21,5 +21,7 @@ export default class Viewport {
     headerAreas: Area[];
     _render: TableRender;
     constructor(render: TableRender);
+    inAreas(row: number, col: number): boolean;
+    inHeaderAreas(row: number, col: number): boolean;
     cellAt(x: number, y: number): ViewportCell | null;
 }
