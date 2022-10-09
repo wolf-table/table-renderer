@@ -7,8 +7,8 @@ function alphabet(index: number): string {
 export function stringAt(index: number) {
   const ary = [];
   while (index >= 0) {
-    ary.push(alphabet(index))
-    index = parseInt((index / alphabets.length) + '', 10) - 1;
+    ary.push(alphabet(index));
+    index = parseInt(index / alphabets.length + '', 10) - 1;
   }
   return ary.reverse().join('');
 }
@@ -16,7 +16,7 @@ export function stringAt(index: number) {
 export function indexAt(str: string) {
   let ret = 0;
   for (let i = 0; i < str.length; i++) {
-    ret = 26 * ret + str.charCodeAt(i) - 64
+    ret = 26 * ret + str.charCodeAt(i) - 64;
   }
   return ret - 1;
 }

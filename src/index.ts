@@ -58,6 +58,7 @@ export type Cell =
       value: string | number;
       type?: string;
       style?: number;
+      format?: string;
       [property: string]: any;
     }
   | string
@@ -66,6 +67,7 @@ export type Cell =
   | undefined;
 
 export type CellFunc = (rowIndex: number, colIndex: number) => Cell;
+export type CellFormatFunc = (value: string, format?: string) => string;
 
 export type Row = {
   height: number;
@@ -197,6 +199,8 @@ export default class TableRender {
    * @returns Cell | string
    */
   _cell: CellFunc = () => undefined;
+
+  _cellFormat: CellFormatFunc = (v) => v;
 
   _merges: string[] = [];
 
@@ -356,6 +360,11 @@ export default class TableRender {
 
   cell(value: (rowIndex: number, colIndex: number) => Cell) {
     this._cell = value;
+    return this;
+  }
+
+  cellFormat(value: CellFormatFunc) {
+    this._cellFormat = value;
     return this;
   }
 

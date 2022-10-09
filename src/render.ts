@@ -14,6 +14,7 @@ import TableRender, {
   Border,
   LineType,
   BorderType,
+  CellFormatFunc,
 } from '.';
 
 function renderLines(canvas: Canvas, { width, color }: LineStyle, cb: () => void) {
@@ -102,6 +103,7 @@ function renderArea(
   canvas: Canvas,
   area: Area | null,
   cell: CellFunc,
+  cellFormat: CellFormatFunc,
   defaultCellStyle: CellStyle,
   defaultLineStyle: LineStyle,
   styles: Partial<CellStyle>[],
@@ -135,7 +137,7 @@ function renderArea(
   area.each((r, c, rect) => {
     const cellv = cell(r, c);
     const cellStyle = mergeCellStyle(r, c, cellv);
-    cellRender(canvas, cellv, rect, cellStyle);
+    cellRender(canvas, cellv, rect, cellStyle, cellFormat);
   });
 
   // render lines
@@ -149,7 +151,7 @@ function renderArea(
         const cellv = cell(it.startRow, it.startCol);
         const cellStyle = mergeCellStyle(it.startRow, it.startCol, cellv);
         const cellRect = area.rect(it);
-        cellRender(canvas, cellv, cellRect, cellStyle);
+        cellRender(canvas, cellv, cellRect, cellStyle, cellFormat);
         areaMerges.push(it);
       }
     });
@@ -166,6 +168,7 @@ function renderBody(canvas: Canvas, area: Area | null, table: TableRender) {
     canvas,
     area,
     table._cell,
+    table._cellFormat,
     table._cellStyle,
     table._lineStyle,
     table._styles,
@@ -179,14 +182,32 @@ function renderBody(canvas: Canvas, area: Area | null, table: TableRender) {
 function renderRowHeader(canvas: Canvas, area: Area | null, table: TableRender) {
   const { cell, width, merges, cols } = table._rowHeader;
   if (width > 0) {
-    renderArea(canvas, area, cell, table._headerCellStyle, table._headerLineStyle, table._styles, merges);
+    renderArea(
+      canvas,
+      area,
+      cell,
+      (v) => v,
+      table._headerCellStyle,
+      table._headerLineStyle,
+      table._styles,
+      merges
+    );
   }
 }
 
 function renderColHeader(canvas: Canvas, area: Area | null, table: TableRender) {
   const { cell, height, merges, rows } = table._colHeader;
   if (height > 0) {
-    renderArea(canvas, area, cell, table._headerCellStyle, table._headerLineStyle, table._styles, merges);
+    renderArea(
+      canvas,
+      area,
+      cell,
+      (v) => v,
+      table._headerCellStyle,
+      table._headerLineStyle,
+      table._styles,
+      merges
+    );
   }
 }
 
@@ -237,7 +258,15 @@ export function render(table: TableRender) {
         () => _colHeader.height,
         () => _rowHeader.width
       );
-      renderArea(canvas, area0, () => '', table._headerCellStyle, table._headerLineStyle, table._styles);
+      renderArea(
+        canvas,
+        area0,
+        () => '',
+        (v) => v,
+        table._headerCellStyle,
+        table._headerLineStyle,
+        table._styles
+      );
     }
   }
 }

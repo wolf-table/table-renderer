@@ -7,6 +7,7 @@ import TableRender, {
   CellStyleBorder,
   LineType,
   Cell,
+  CellFormatFunc,
 } from '.';
 import Canvas, { borderLineTypeToWidth } from './canvas';
 
@@ -126,14 +127,21 @@ export function cellBorderRender(
 
 // canvas: Canvas2d
 // style:
-export function cellRender(canvas: Canvas, cell: Cell, rect: Rect, style: CellStyle) {
+export function cellRender(
+  canvas: Canvas,
+  cell: Cell,
+  rect: Rect,
+  style: CellStyle,
+  cellFormat: CellFormatFunc
+) {
   let text = '';
   let type = undefined;
   if (cell) {
-    if (typeof cell === 'string' || typeof cell === 'number') text = `${cell}`;
-    else {
+    if (typeof cell === 'string' || typeof cell === 'number') {
+      text = cellFormat(`${cell}`);
+    } else {
       type = cell.type;
-      text = (cell.value || '') + '';
+      text = cellFormat((cell.value || '') + '', cell.format);
     }
   }
 
