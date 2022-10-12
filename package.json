@@ -43,7 +43,5 @@
     "webpack-dev-server": "^4.7.3",
     "webpack-merge": "^5.8.0"
   },
-  "dependencies": {
-    "table-alphabet": "file:../table-alphabet"
-  }
+  "dependencies": {}
 }
