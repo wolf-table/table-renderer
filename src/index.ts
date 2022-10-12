@@ -65,9 +65,8 @@ export type Cell =
   | number
   | null
   | undefined;
-
-export type CellFunc = (rowIndex: number, colIndex: number) => Cell;
-export type CellFormatFunc = (value: string, format?: string) => string;
+export type CellGetter = (rowIndex: number, colIndex: number) => Cell;
+export type CellFormatter = (value: string, format?: string) => string;
 
 export type Row = {
   height: number;
@@ -76,8 +75,8 @@ export type Row = {
   style?: number;
 };
 
-export type RowFunc = (index: number) => Row | undefined;
-export type RowHeightFunc = (index: number) => number;
+export type RowGetter = (index: number) => Row | undefined;
+export type RowHeightGetter = (index: number) => number;
 
 export type Col = {
   width: number;
@@ -86,20 +85,22 @@ export type Col = {
   style?: number;
 };
 
-export type ColFunc = (index: number) => Col | undefined;
-export type ColWidthFunc = (index: number) => number;
+export type ColGetter = (index: number) => Col | undefined;
+export type ColWidthGetter = (index: number) => number;
 
 export type RowHeader = {
   width: number;
   cols: number;
-  cell: CellFunc;
+  cell: CellGetter;
+  cellTypeRenderer?: CellTypeRenderer;
   merges?: string[];
 };
 
 export type ColHeader = {
   height: number;
   rows: number;
-  cell: CellFunc;
+  cell: CellGetter;
+  cellTypeRenderer?: CellTypeRenderer;
   merges?: string[];
 };
 
@@ -119,7 +120,8 @@ export type ViewportCell = {
   placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
 
-export type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => void;
+export type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => boolean;
+export type CellTypeRenderer = (type?: string) => CellTypeRender | null | undefined;
 
 /**
  * ----------------------------------------------------------------
@@ -143,7 +145,7 @@ export type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => void;
  * }
  */
 
-export default class TableRender {
+export default class TableRenderer {
   _target: HTMLCanvasElement;
 
   // table width
@@ -183,14 +185,14 @@ export default class TableRender {
    * @param {int} rowIndex
    * @returns Row | undefined
    */
-  _row: RowFunc = () => undefined;
+  _row: RowGetter = () => undefined;
 
   /**
    * get col given colIndex
    * @param {int} coIndex
    * @returns Row | undefined
    */
-  _col: ColFunc = () => undefined;
+  _col: ColGetter = () => undefined;
 
   /**
    * get cell given rowIndex, colIndex
@@ -198,9 +200,11 @@ export default class TableRender {
    * @param {int} colIndex
    * @returns Cell | string
    */
-  _cell: CellFunc = () => undefined;
+  _cell: CellGetter = () => undefined;
 
-  _cellFormat: CellFormatFunc = (v) => v;
+  _cellTypeRenderer: CellTypeRenderer = () => null;
+
+  _cellFormatter: CellFormatter = (v) => v;
 
   _merges: string[] = [];
 
@@ -348,12 +352,12 @@ export default class TableRender {
     return this;
   }
 
-  row(value: RowFunc) {
+  row(value: RowGetter) {
     this._row = value;
     return this;
   }
 
-  col(value: ColFunc) {
+  col(value: ColGetter) {
     this._col = value;
     return this;
   }
@@ -363,8 +367,13 @@ export default class TableRender {
     return this;
   }
 
-  cellFormat(value: CellFormatFunc) {
-    this._cellFormat = value;
+  cellTypeRenderer(value: CellTypeRenderer) {
+    this._cellTypeRenderer = value;
+    return this;
+  }
+
+  cellFormatter(value: CellFormatter) {
+    this._cellFormatter = value;
     return this;
   }
 
@@ -448,17 +457,7 @@ export default class TableRender {
   // get methods ---- end -------
 
   static create(container: string | HTMLCanvasElement, width: number, height: number) {
-    return new TableRender(container, width, height);
-  }
-
-  private static _cellTypeRender = new Map();
-
-  static addCellTypeRender(type: string, cellTypeRender: CellTypeRender) {
-    this._cellTypeRender.set(type, cellTypeRender);
-  }
-
-  static getCellTypeRender(type: string): CellTypeRender | null {
-    return this._cellTypeRender.get(type);
+    return new TableRenderer(container, width, height);
   }
 }
 
@@ -473,6 +472,6 @@ declare global {
 try {
   if (window) {
     window.wolf ||= {};
-    window.wolf.table_render = TableRender.create;
+    window.wolf.table_renderer = TableRenderer.create;
   }
 } catch (e) {}

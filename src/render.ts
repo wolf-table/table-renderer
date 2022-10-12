@@ -3,18 +3,19 @@ import Canvas from './canvas';
 import { cellRender, cellBorderRender } from './cell-render';
 import Range, { eachRanges } from './range';
 import { borderRanges } from './border';
-import TableRender, {
+import TableRenderer, {
   Cell,
-  CellFunc,
+  CellGetter,
   CellStyle,
-  ColFunc,
+  ColGetter,
   LineStyle,
   Rect,
-  RowFunc,
+  RowGetter,
   Border,
   LineType,
   BorderType,
-  CellFormatFunc,
+  CellFormatter,
+  CellTypeRenderer,
 } from '.';
 
 function renderLines(canvas: Canvas, { width, color }: LineStyle, cb: () => void) {
@@ -102,15 +103,16 @@ function renderBorders(canvas: Canvas, area: Area, borders: Border[] | undefined
 function renderArea(
   canvas: Canvas,
   area: Area | null,
-  cell: CellFunc,
-  cellFormat: CellFormatFunc,
+  cell: CellGetter,
+  cellTypeRenderer: CellTypeRenderer | undefined,
+  cellFormat: CellFormatter,
   defaultCellStyle: CellStyle,
   defaultLineStyle: LineStyle,
   styles: Partial<CellStyle>[],
   merges?: string[],
   borders?: Border[],
-  row?: RowFunc,
-  col?: ColFunc
+  row?: RowGetter,
+  col?: ColGetter
 ) {
   if (!area) return;
   canvas.save().translate(area.x, area.y);
@@ -137,7 +139,7 @@ function renderArea(
   area.each((r, c, rect) => {
     const cellv = cell(r, c);
     const cellStyle = mergeCellStyle(r, c, cellv);
-    cellRender(canvas, cellv, rect, cellStyle, cellFormat);
+    cellRender(canvas, cellv, rect, cellStyle, cellTypeRenderer, cellFormat);
   });
 
   // render lines
@@ -151,7 +153,7 @@ function renderArea(
         const cellv = cell(it.startRow, it.startCol);
         const cellStyle = mergeCellStyle(it.startRow, it.startCol, cellv);
         const cellRect = area.rect(it);
-        cellRender(canvas, cellv, cellRect, cellStyle, cellFormat);
+        cellRender(canvas, cellv, cellRect, cellStyle, cellTypeRenderer, cellFormat);
         areaMerges.push(it);
       }
     });
@@ -163,12 +165,13 @@ function renderArea(
   canvas.restore();
 }
 
-function renderBody(canvas: Canvas, area: Area | null, table: TableRender) {
+function renderBody(canvas: Canvas, area: Area | null, table: TableRenderer) {
   renderArea(
     canvas,
     area,
     table._cell,
-    table._cellFormat,
+    table._cellTypeRenderer,
+    table._cellFormatter,
     table._cellStyle,
     table._lineStyle,
     table._styles,
@@ -179,13 +182,14 @@ function renderBody(canvas: Canvas, area: Area | null, table: TableRender) {
   );
 }
 
-function renderRowHeader(canvas: Canvas, area: Area | null, table: TableRender) {
-  const { cell, width, merges, cols } = table._rowHeader;
+function renderRowHeader(canvas: Canvas, area: Area | null, table: TableRenderer) {
+  const { cell, width, merges, cellTypeRenderer } = table._rowHeader;
   if (width > 0) {
     renderArea(
       canvas,
       area,
       cell,
+      cellTypeRenderer,
       (v) => v,
       table._headerCellStyle,
       table._headerLineStyle,
@@ -195,13 +199,14 @@ function renderRowHeader(canvas: Canvas, area: Area | null, table: TableRender) 
   }
 }
 
-function renderColHeader(canvas: Canvas, area: Area | null, table: TableRender) {
-  const { cell, height, merges, rows } = table._colHeader;
+function renderColHeader(canvas: Canvas, area: Area | null, table: TableRenderer) {
+  const { cell, height, merges, cellTypeRenderer } = table._colHeader;
   if (height > 0) {
     renderArea(
       canvas,
       area,
       cell,
+      cellTypeRenderer,
       (v) => v,
       table._headerCellStyle,
       table._headerLineStyle,
@@ -211,7 +216,7 @@ function renderColHeader(canvas: Canvas, area: Area | null, table: TableRender) 
   }
 }
 
-export function render(table: TableRender) {
+export function render(table: TableRenderer) {
   const { _width, _height, _target, _scale, _viewport, _freeze, _rowHeader, _colHeader } = table;
   if (_viewport) {
     const canvas = new Canvas(_target, _scale);
@@ -262,6 +267,7 @@ export function render(table: TableRender) {
         canvas,
         area0,
         () => '',
+        () => undefined,
         (v) => v,
         table._headerCellStyle,
         table._headerLineStyle,

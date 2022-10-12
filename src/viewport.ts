@@ -1,4 +1,4 @@
-import TableRender, { ViewportCell } from '.';
+import TableRenderer, { ViewportCell } from '.';
 import Area from './area';
 
 export default class Viewport {
@@ -22,9 +22,9 @@ export default class Viewport {
    */
   headerAreas: Area[];
 
-  _render: TableRender;
+  _render: TableRenderer;
 
-  constructor(render: TableRender) {
+  constructor(render: TableRenderer) {
     this._render = render;
 
     const [tx, ty] = [render._rowHeader.width, render._colHeader.height];

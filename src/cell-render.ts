@@ -1,4 +1,4 @@
-import TableRender, {
+import {
   Align,
   CellStyle,
   Rect,
@@ -7,7 +7,8 @@ import TableRender, {
   CellStyleBorder,
   LineType,
   Cell,
-  CellFormatFunc,
+  CellFormatter,
+  CellTypeRenderer,
 } from '.';
 import Canvas, { borderLineTypeToWidth } from './canvas';
 
@@ -132,16 +133,17 @@ export function cellRender(
   cell: Cell,
   rect: Rect,
   style: CellStyle,
-  cellFormat: CellFormatFunc
+  cellTypeRenderer: CellTypeRenderer | undefined,
+  cellFormatter: CellFormatter
 ) {
   let text = '';
   let type = undefined;
   if (cell) {
     if (typeof cell === 'string' || typeof cell === 'number') {
-      text = cellFormat(`${cell}`);
+      text = cellFormatter(`${cell}`);
     } else {
       type = cell.type;
-      text = cellFormat((cell.value || '') + '', cell.format);
+      text = cellFormatter((cell.value || '') + '', cell.format);
     }
   }
 
@@ -171,11 +173,14 @@ export function cellRender(
     canvas.rotate(rotate * (Math.PI / 180));
   }
 
-  if (type) {
-    const typeRender = TableRender.getCellTypeRender(type);
+  if (cellTypeRenderer !== undefined) {
+    const typeRender = cellTypeRenderer(type);
     if (typeRender) {
       canvas.save();
-      typeRender(canvas, rect, cell);
+      if (!typeRender(canvas, rect, cell)) {
+        canvas.restore();
+        return;
+      }
       canvas.restore();
     }
   }
