@@ -1,2 +1,2 @@
-import TableRender from '.';
-export declare function render(table: TableRender): void;
+import TableRenderer from '.';
+export declare function render(table: TableRenderer): void;

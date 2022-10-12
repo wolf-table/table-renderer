@@ -1,4 +1,4 @@
-import TableRender, { Cell } from './src';
+import TableRender, { Cell, CellTypeRenderer } from './src';
 const longText = {
   value: 'you are a good boy, a very good boy-------!!!',
   style: 0,
@@ -12,27 +12,47 @@ function cellText(ri: number, ci: number): string | Cell {
   return value + '\nss';
 }
 
-TableRender.addCellTypeRender('select', (canvas, { x, y, width, height }) => {
-  canvas
-    .attr({ fillStyle: '#0069c2' })
-    .beginPath()
-    .moveTo(width - 12, 2)
-    .lineTo(width - 2, 2)
-    .lineTo(width - 7, 10)
-    .closePath()
-    .fill();
-});
-
-TableRender.addCellTypeRender('bool', (canvas, { x, y, width, height }) => {
-  canvas
-    .attr({ strokeStyle: '#0069c2', lineWidth: 2 })
-    .roundRect((width - 12) / 2, height / 2 - 5, 10, 10, 2)
-    .stroke();
-});
+function cellTypeRenderer(type?: string) {
+  return (canvas, { x, y, width, height }) => {
+    if (type === 'bool') {
+      canvas
+        .attr({ strokeStyle: '#0069c2', lineWidth: 2 })
+        .roundRect((width - 12) / 2, height / 2 - 5, 10, 10, 2)
+        .stroke();
+    } else if (type === 'select') {
+      canvas
+        .attr({ fillStyle: '#0069c2' })
+        .beginPath()
+        .moveTo(width - 12, 2)
+        .lineTo(width - 2, 2)
+        .lineTo(width - 7, 10)
+        .closePath()
+        .fill();
+    }
+    return true;
+  };
+}
 
 TableRender.create('#table', 1400, 800)
   .scale(1)
-  .colHeader({ height: 50, rows: 2, merges: ['A1:C1', 'D1:D2'] })
+  .colHeader({
+    height: 50,
+    rows: 2,
+    merges: ['A1:C1', 'D1:D2'],
+    cellTypeRenderer: (type?: string) => {
+      return (canvas, { x, y, width, height }) => {
+        canvas
+          .attr({ fillStyle: '#0069c2' })
+          .beginPath()
+          .moveTo(width - 12, 2)
+          .lineTo(width - 2, 2)
+          .lineTo(width - 7, 10)
+          .closePath()
+          .fill();
+        return true;
+      };
+    },
+  })
   .merges(['I10:J11', 'B9:D10', 'G21:H22', 'J22:L23'])
   .borders([
     ['G3', 'all', 'thick', '#188038'],
@@ -50,4 +70,5 @@ TableRender.create('#table', 1400, 800)
   .scrollRows(2)
   .scrollCols(1)
   .cell((ri, ci) => cellText(ri, ci))
+  .cellTypeRenderer(cellTypeRenderer)
   .render();

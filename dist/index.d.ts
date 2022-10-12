@@ -38,35 +38,39 @@ export declare type Cell = {
     value: string | number;
     type?: string;
     style?: number;
+    format?: string;
     [property: string]: any;
 } | string | number | null | undefined;
-export declare type CellFunc = (rowIndex: number, colIndex: number) => Cell;
+export declare type CellGetter = (rowIndex: number, colIndex: number) => Cell;
+export declare type CellFormatter = (value: string, format?: string) => string;
 export declare type Row = {
     height: number;
     hide?: boolean;
     autoFit?: boolean;
     style?: number;
 };
-export declare type RowFunc = (index: number) => Row | undefined;
-export declare type RowHeightFunc = (index: number) => number;
+export declare type RowGetter = (index: number) => Row | undefined;
+export declare type RowHeightGetter = (index: number) => number;
 export declare type Col = {
     width: number;
     hide?: boolean;
     autoFit?: boolean;
     style?: number;
 };
-export declare type ColFunc = (index: number) => Col | undefined;
-export declare type ColWidthFunc = (index: number) => number;
+export declare type ColGetter = (index: number) => Col | undefined;
+export declare type ColWidthGetter = (index: number) => number;
 export declare type RowHeader = {
     width: number;
     cols: number;
-    cell: CellFunc;
+    cell: CellGetter;
+    cellTypeRenderer?: CellTypeRenderer;
     merges?: string[];
 };
 export declare type ColHeader = {
     height: number;
     rows: number;
-    cell: CellFunc;
+    cell: CellGetter;
+    cellTypeRenderer?: CellTypeRenderer;
     merges?: string[];
 };
 export declare type Rect = {
@@ -82,7 +86,8 @@ export declare type AreaCell = {
 export declare type ViewportCell = {
     placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
-export declare type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => void;
+export declare type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => boolean;
+export declare type CellTypeRenderer = (type?: string) => CellTypeRender | null | undefined;
 /**
  * ----------------------------------------------------------------
  * |            | column header                                   |
@@ -104,7 +109,7 @@ export declare type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) =>
  *   type: text | button | link | checkbox | radio | list | progress | image | imageButton | date
  * }
  */
-export default class TableRender {
+export default class TableRenderer {
     _target: HTMLCanvasElement;
     _width: number;
     _height: number;
@@ -122,20 +127,22 @@ export default class TableRender {
      * @param {int} rowIndex
      * @returns Row | undefined
      */
-    _row: RowFunc;
+    _row: RowGetter;
     /**
      * get col given colIndex
      * @param {int} coIndex
      * @returns Row | undefined
      */
-    _col: ColFunc;
+    _col: ColGetter;
     /**
      * get cell given rowIndex, colIndex
      * @param {int} rowIndex
      * @param {int} colIndex
      * @returns Cell | string
      */
-    _cell: CellFunc;
+    _cell: CellGetter;
+    _cellTypeRenderer: CellTypeRenderer;
+    _cellFormatter: CellFormatter;
     _merges: string[];
     _borders: Border[];
     _styles: Partial<CellStyle>[];
@@ -161,9 +168,11 @@ export default class TableRender {
     startCol(value: number): this;
     scrollRows(value: number): this;
     scrollCols(value: number): this;
-    row(value: RowFunc): this;
-    col(value: ColFunc): this;
+    row(value: RowGetter): this;
+    col(value: ColGetter): this;
     cell(value: (rowIndex: number, colIndex: number) => Cell): this;
+    cellTypeRenderer(value: CellTypeRenderer): this;
+    cellFormatter(value: CellFormatter): this;
     merges(value?: string[]): this;
     styles(value?: Partial<CellStyle>[]): this;
     borders(value?: Border[]): this;
@@ -178,10 +187,7 @@ export default class TableRender {
     rowHeightAt(index: number): number;
     colWidthAt(index: number): number;
     get viewport(): Viewport | null;
-    static create(container: string | HTMLCanvasElement, width: number, height: number): TableRender;
-    private static _cellTypeRender;
-    static addCellTypeRender(type: string, cellTypeRender: CellTypeRender): void;
-    static getCellTypeRender(type: string): CellTypeRender | null;
+    static create(container: string | HTMLCanvasElement, width: number, height: number): TableRenderer;
 }
 export { expr2xy, xy2expr, stringAt, Range, Viewport, Area, eachRanges, findRanges };
 declare global {

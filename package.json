@@ -1,8 +1,8 @@
 {
-  "name": "table-render",
+  "name": "table-renderer",
   "version": "1.0.0",
-  "description": "a table render",
-  "main": "dist/table-render.js",
+  "description": "a table renderer",
+  "main": "dist/table-renderer.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "./node_modules/.bin/webpack serve --config build/webpack.dev.js",

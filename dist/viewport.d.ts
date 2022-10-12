@@ -1,4 +1,4 @@
-import TableRender, { ViewportCell } from '.';
+import TableRenderer, { ViewportCell } from '.';
 import Area from './area';
 export default class Viewport {
     /**
@@ -19,9 +19,8 @@ export default class Viewport {
      *   area-3    |
      */
     headerAreas: Area[];
-    _render: TableRender;
-    constructor(render: TableRender);
+    _render: TableRenderer;
+    constructor(render: TableRenderer);
     inAreas(row: number, col: number): boolean;
-    inHeaderAreas(row: number, col: number): boolean;
     cellAt(x: number, y: number): ViewportCell | null;
 }
