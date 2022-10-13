@@ -66,7 +66,8 @@ export type Cell =
   | null
   | undefined;
 export type CellGetter = (rowIndex: number, colIndex: number) => Cell;
-export type CellFormatter = (value: string, format?: string) => string;
+
+export type Formatter = (value: string, format?: string) => string;
 
 export type Row = {
   height: number;
@@ -92,7 +93,7 @@ export type RowHeader = {
   width: number;
   cols: number;
   cell: CellGetter;
-  cellTypeRenderer?: CellTypeRenderer;
+  cellRenderer?: CellRenderer;
   merges?: string[];
 };
 
@@ -100,7 +101,7 @@ export type ColHeader = {
   height: number;
   rows: number;
   cell: CellGetter;
-  cellTypeRenderer?: CellTypeRenderer;
+  cellRenderer?: CellRenderer;
   merges?: string[];
 };
 
@@ -120,8 +121,7 @@ export type ViewportCell = {
   placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
 
-export type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => boolean;
-export type CellTypeRenderer = (type?: string) => CellTypeRender | null | undefined;
+export type CellRenderer = (canvas: Canvas, rect: Rect, cell: Cell, text: string) => boolean;
 
 /**
  * ----------------------------------------------------------------
@@ -202,9 +202,9 @@ export default class TableRenderer {
    */
   _cell: CellGetter = () => undefined;
 
-  _cellTypeRenderer: CellTypeRenderer = () => null;
+  _cellRenderer: CellRenderer = () => true;
 
-  _cellFormatter: CellFormatter = (v) => v;
+  _formatter: Formatter = (v) => v;
 
   _merges: string[] = [];
 
@@ -367,13 +367,13 @@ export default class TableRenderer {
     return this;
   }
 
-  cellTypeRenderer(value: CellTypeRenderer) {
-    this._cellTypeRenderer = value;
+  cellRenderer(value: CellRenderer) {
+    this._cellRenderer = value;
     return this;
   }
 
-  cellFormatter(value: CellFormatter) {
-    this._cellFormatter = value;
+  formatter(value: Formatter) {
+    this._formatter = value;
     return this;
   }
 

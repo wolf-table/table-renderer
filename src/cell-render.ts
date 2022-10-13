@@ -7,8 +7,8 @@ import {
   CellStyleBorder,
   LineType,
   Cell,
-  CellFormatter,
-  CellTypeRenderer,
+  Formatter,
+  CellRenderer,
 } from '.';
 import Canvas, { borderLineTypeToWidth } from './canvas';
 
@@ -133,17 +133,17 @@ export function cellRender(
   cell: Cell,
   rect: Rect,
   style: CellStyle,
-  cellTypeRenderer: CellTypeRenderer | undefined,
-  cellFormatter: CellFormatter
+  cellRenderer: CellRenderer | undefined,
+  formatter: Formatter
 ) {
   let text = '';
   let type = undefined;
   if (cell) {
     if (typeof cell === 'string' || typeof cell === 'number') {
-      text = cellFormatter(`${cell}`);
+      text = formatter(`${cell}`);
     } else {
       type = cell.type;
-      text = cellFormatter((cell.value || '') + '', cell.format);
+      text = formatter((cell.value || '') + '', cell.format);
     }
   }
 
@@ -173,16 +173,13 @@ export function cellRender(
     canvas.rotate(rotate * (Math.PI / 180));
   }
 
-  if (cellTypeRenderer !== undefined) {
-    const typeRender = cellTypeRenderer(type);
-    if (typeRender) {
-      canvas.save();
-      if (!typeRender(canvas, rect, cell)) {
-        canvas.restore();
-        return;
-      }
+  if (cellRenderer !== undefined) {
+    canvas.save();
+    if (!cellRenderer(canvas, rect, cell, text)) {
       canvas.restore();
+      return;
     }
+    canvas.restore();
   }
 
   // text
