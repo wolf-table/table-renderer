@@ -229,7 +229,7 @@ export default class TableRenderer {
     italic: false,
     rotate: 0,
     fontSize: 10,
-    fontName: 'Source Sans Pro',
+    fontFamily: 'Source Sans Pro',
   };
 
   // row header
@@ -267,7 +267,7 @@ export default class TableRenderer {
     italic: false,
     rotate: 0,
     fontSize: 10,
-    fontName: 'Source Sans Pro',
+    fontFamily: 'Source Sans Pro',
   };
 
   // freezed [cols, rows]
