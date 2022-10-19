@@ -149,7 +149,7 @@ export function cellRender(
 
   const {
     fontSize,
-    fontName,
+    fontFamily,
     bold,
     italic,
     color,
@@ -191,7 +191,7 @@ export function cellRender(
       .attr({
         textAlign: align,
         textBaseline: valign,
-        font: fontString(fontName, fontSize, italic, bold),
+        font: fontString(fontFamily, fontSize, italic, bold),
         fillStyle: color,
       });
 

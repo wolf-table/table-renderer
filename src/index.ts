@@ -39,16 +39,16 @@ export type Border = [string, BorderType, LineType, string];
 
 export type CellStyle = {
   bgcolor: string;
+  color: string;
   align: Align;
   valign: VerticalAlign;
   textwrap: boolean;
   underline: boolean;
   strikethrough: boolean;
-  color: string;
   bold: boolean;
   italic: boolean;
   fontSize: number;
-  fontName: string;
+  fontFamily: string;
   rotate?: number;
   padding?: [number, number];
 };
