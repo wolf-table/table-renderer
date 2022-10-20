@@ -8,7 +8,6 @@ import TableRenderer, {
   CellGetter,
   CellStyle,
   ColGetter,
-  LineStyle,
   Rect,
   RowGetter,
   Border,
@@ -16,10 +15,10 @@ import TableRenderer, {
   Formatter,
   CellRenderer,
   BorderStyle,
-  Line,
+  Gridline,
 } from '.';
 
-function renderLines(canvas: Canvas, { width, color }: Line, cb: () => void) {
+function renderLines(canvas: Canvas, { width, color }: Gridline, cb: () => void) {
   if (width > 0) {
     canvas.save().beginPath().prop({ lineWidth: width, strokeStyle: color });
     cb();
@@ -27,8 +26,8 @@ function renderLines(canvas: Canvas, { width, color }: Line, cb: () => void) {
   }
 }
 
-function renderGridLines(canvas: Canvas, area: Area, line: Line) {
-  renderLines(canvas, line, () => {
+function renderGridLines(canvas: Canvas, area: Area, gridline: Gridline) {
+  renderLines(canvas, gridline, () => {
     // draw row lines
     area.eachRow((row, y, h) => {
       canvas.line(0, y + h, area.width, y + h);
@@ -108,7 +107,7 @@ function renderArea(
   cellRenderer: CellRenderer | undefined,
   formatter: Formatter,
   defaultCellStyle: CellStyle,
-  defaultLine: Line,
+  defaultGridline: Gridline,
   styles: Partial<CellStyle>[],
   merges?: string[],
   borders?: Border[],
@@ -144,7 +143,7 @@ function renderArea(
   });
 
   // render lines
-  renderGridLines(canvas, area, defaultLine);
+  renderGridLines(canvas, area, defaultGridline);
 
   const areaMerges: Range[] = [];
   // render merges
@@ -174,7 +173,7 @@ function renderBody(canvas: Canvas, area: Area | null, table: TableRenderer) {
     table._cellRenderer,
     table._formatter,
     table._cellStyle,
-    table._line,
+    table._gridline,
     table._styles,
     table._merges,
     table._borders,
@@ -193,7 +192,7 @@ function renderRowHeader(canvas: Canvas, area: Area | null, table: TableRenderer
       cellRenderer,
       (v) => v,
       table._headerCellStyle,
-      table._headerLine,
+      table._headerGridline,
       table._styles,
       merges
     );
@@ -210,7 +209,7 @@ function renderColHeader(canvas: Canvas, area: Area | null, table: TableRenderer
       cellRenderer,
       (v) => v,
       table._headerCellStyle,
-      table._headerLine,
+      table._headerGridline,
       table._styles,
       merges
     );
@@ -245,7 +244,7 @@ export function render(table: TableRenderer) {
     // render freeze
     const [cols, rows] = _freeze;
     if (cols > 0 || rows > 0) {
-      renderLines(canvas, table._freezeLine, () => {
+      renderLines(canvas, table._freezeGridline, () => {
         if (cols > 0) canvas.line(0, area4.y, _width, area4.y);
         if (rows > 0) canvas.line(area4.x, 0, area4.x, _height);
       });
@@ -271,7 +270,7 @@ export function render(table: TableRenderer) {
         undefined,
         (v) => v,
         table._headerCellStyle,
-        table._headerLine,
+        table._headerGridline,
         table._styles
       );
     }

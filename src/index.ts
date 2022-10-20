@@ -8,12 +8,12 @@ import Area from './area';
 export type Align = 'left' | 'right' | 'center';
 export type VerticalAlign = 'top' | 'bottom' | 'middle';
 
-export type LineStyle = 'solid' | 'dashed' | 'dotted';
+export type GridlineStyle = 'solid' | 'dashed' | 'dotted';
 
-export type Line = {
+export type Gridline = {
   width: number;
   color: string;
-  style?: LineStyle;
+  style?: GridlineStyle;
 };
 
 export type TextLineType = 'underline' | 'strikethrough';
@@ -214,7 +214,7 @@ export default class TableRenderer {
 
   _styles: Partial<CellStyle>[] = [];
 
-  _line: Line = {
+  _gridline: Gridline = {
     width: 1,
     color: '#e6e6e6',
   };
@@ -252,7 +252,7 @@ export default class TableRenderer {
     },
   };
 
-  _headerLine: Line = {
+  _headerGridline: Gridline = {
     width: 1,
     color: '#e6e6e6',
   };
@@ -275,7 +275,7 @@ export default class TableRenderer {
   // freezed [cols, rows]
   _freeze: [number, number] = [0, 0];
 
-  _freezeLine: Line = {
+  _freezeGridline: Gridline = {
     width: 2,
     color: '#d8d8d8',
   };
@@ -394,8 +394,8 @@ export default class TableRenderer {
     return this;
   }
 
-  line(value: Partial<Line>) {
-    Object.assign(this._line, value);
+  gridline(value: Partial<Gridline>) {
+    Object.assign(this._gridline, value);
     return this;
   }
 
@@ -414,8 +414,8 @@ export default class TableRenderer {
     return this;
   }
 
-  headerLine(value: Partial<Line>) {
-    Object.assign(this._headerLine, value);
+  headerGridline(value: Partial<Gridline>) {
+    Object.assign(this._headerGridline, value);
     return this;
   }
 
@@ -429,8 +429,8 @@ export default class TableRenderer {
     return this;
   }
 
-  freezeLine(value: Partial<Line>) {
-    Object.assign(this._freezeLine, value);
+  freezeGridline(value: Partial<Gridline>) {
+    Object.assign(this._freezeGridline, value);
     return this;
   }
 
