@@ -1,4 +1,4 @@
-import TableRender, { Cell, CellRenderer } from './src';
+import TableRender, { Cell, Canvas } from './src';
 const longText = {
   value: 'you are a good boy, a very good boy-------!!!',
   style: 0,
@@ -12,16 +12,16 @@ function cellText(ri: number, ci: number): string | Cell {
   return value + '\nss';
 }
 
-function cellRenderer(canvas, { x, y, width, height }, cell) {
+function cellRenderer(canvas: Canvas, { x, y, width, height }, cell) {
   const type = (cell && cell.type) || '';
   if (type === 'bool') {
     canvas
-      .attr({ strokeStyle: '#0069c2', lineWidth: 2 })
+      .prop({ strokeStyle: '#0069c2', lineWidth: 2 })
       .roundRect((width - 12) / 2, height / 2 - 5, 10, 10, 2)
       .stroke();
   } else if (type === 'select') {
     canvas
-      .attr({ fillStyle: '#0069c2' })
+      .prop({ fillStyle: '#0069c2' })
       .beginPath()
       .moveTo(width - 12, 2)
       .lineTo(width - 2, 2)
@@ -40,7 +40,7 @@ TableRender.create('#table', 1400, 800)
     merges: ['A1:C1', 'D1:D2'],
     cellRenderer: (canvas, { x, y, width, height }) => {
       canvas
-        .attr({ fillStyle: '#0069c2' })
+        .prop({ fillStyle: '#0069c2' })
         .beginPath()
         .moveTo(width - 12, 2)
         .lineTo(width - 2, 2)
@@ -52,11 +52,11 @@ TableRender.create('#table', 1400, 800)
   })
   .merges(['I10:J11', 'B9:D10', 'G21:H22', 'J22:L23'])
   .borders([
-    ['G3', 'all', 'thick', '#188038'],
+    ['G3', 'all', 'dashed', '#188038'],
     ['B9', 'outside', 'thick', '#188038'],
-    ['M4:N10', 'all', 'thick', '#188038'],
+    ['M4:N10', 'all', 'medium', '#188038'],
     ['H9:K12', 'inside', 'thick', 'red'],
-    ['E14:J16', 'all', 'thick', '#188038'],
+    ['E14:J16', 'all', 'dotted', 'red'],
     ['E19:M24', 'all', 'thick', '#188038'],
   ])
   .startRow(1)

@@ -8,20 +8,21 @@ import Area from './area';
 export type Align = 'left' | 'right' | 'center';
 export type VerticalAlign = 'top' | 'bottom' | 'middle';
 
-export type LineStyle = {
+export type LineStyle = 'solid' | 'dashed' | 'dotted';
+
+export type Line = {
   width: number;
   color: string;
+  style?: LineStyle;
 };
-
-export type LineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
 
 export type TextLineType = 'underline' | 'strikethrough';
 
 export type CellStyleBorder = {
-  left?: [LineType, string];
-  top?: [LineType, string];
-  right?: [LineType, string];
-  bottom?: [LineType, string];
+  left?: [BorderStyle, string];
+  top?: [BorderStyle, string];
+  right?: [BorderStyle, string];
+  bottom?: [BorderStyle, string];
 };
 
 export type BorderType =
@@ -34,8 +35,9 @@ export type BorderType =
   | 'top'
   | 'right'
   | 'bottom';
-// ref, type, line-type, line-color
-export type Border = [string, BorderType, LineType, string];
+export type BorderStyle = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
+// ref, type, style, color
+export type Border = [string, BorderType, BorderStyle, string];
 
 export type CellStyle = {
   bgcolor: string;
@@ -212,7 +214,7 @@ export default class TableRenderer {
 
   _styles: Partial<CellStyle>[] = [];
 
-  _lineStyle: LineStyle = {
+  _line: Line = {
     width: 1,
     color: '#e6e6e6',
   };
@@ -250,7 +252,7 @@ export default class TableRenderer {
     },
   };
 
-  _headerLineStyle: LineStyle = {
+  _headerLine: Line = {
     width: 1,
     color: '#e6e6e6',
   };
@@ -273,7 +275,7 @@ export default class TableRenderer {
   // freezed [cols, rows]
   _freeze: [number, number] = [0, 0];
 
-  _freezeLineStyle: LineStyle = {
+  _freezeLine: Line = {
     width: 2,
     color: '#d8d8d8',
   };
@@ -392,8 +394,8 @@ export default class TableRenderer {
     return this;
   }
 
-  lineStyle(value: Partial<LineStyle>) {
-    Object.assign(this._lineStyle, value);
+  line(value: Partial<Line>) {
+    Object.assign(this._line, value);
     return this;
   }
 
@@ -412,8 +414,8 @@ export default class TableRenderer {
     return this;
   }
 
-  headerLineStyle(value: Partial<LineStyle>) {
-    Object.assign(this._headerLineStyle, value);
+  headerLine(value: Partial<Line>) {
+    Object.assign(this._headerLine, value);
     return this;
   }
 
@@ -427,8 +429,8 @@ export default class TableRenderer {
     return this;
   }
 
-  freezeLineStyle(value: Partial<LineStyle>) {
-    Object.assign(this._freezeLineStyle, value);
+  freezeLine(value: Partial<Line>) {
+    Object.assign(this._freezeLine, value);
     return this;
   }
 
@@ -461,7 +463,7 @@ export default class TableRenderer {
   }
 }
 
-export { expr2xy, xy2expr, stringAt, Range, Viewport, Area, eachRanges, findRanges };
+export { expr2xy, xy2expr, stringAt, Canvas, Range, Viewport, Area, eachRanges, findRanges };
 
 declare global {
   interface Window {

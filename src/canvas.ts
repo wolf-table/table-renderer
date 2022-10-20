@@ -1,4 +1,4 @@
-type LineStyleAttrs = {
+type LineProperties = {
   lineWidth: number;
   lineCap: 'butt' | 'round' | 'square';
   lineJoin: 'round' | 'bevel' | 'miter';
@@ -6,39 +6,35 @@ type LineStyleAttrs = {
   lineDashOffset: number;
 };
 
-type TextStyleAttrs = {
+type TextProperties = {
   font: string;
   textAlign: 'start' | 'end' | 'left' | 'right' | 'center';
   textBaseline: 'top' | 'hanging' | 'middle' | 'alphabetic' | 'ideographic' | 'bottom';
   direction: 'ltr' | 'rtl' | 'inherit';
 };
 
-type FillStrokeStyleAttrs = {
+type FillStrokeProperties = {
   fillStyle: string;
   strokeStyle: string;
 };
 
-type ShadowAttrs = {
+type ShadowProperties = {
   shadowBlur: number;
   shadowColor: string;
   shadowOffsetX: number;
   shadowOffsetY: number;
 };
 
-type CompositingAttrs = {
+type CompositingProperties = {
   globalAlpha: number;
   globalCompositeOperation: string;
 };
 
-type Attrs = LineStyleAttrs & TextStyleAttrs & FillStrokeStyleAttrs & ShadowAttrs & CompositingAttrs;
-
-type BorderLineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
-
-export function borderLineTypeToWidth(lineType: BorderLineType) {
-  if (lineType === 'medium') return 2;
-  else if (lineType === 'thick') return 3;
-  return 1;
-}
+type Properties = LineProperties &
+  TextProperties &
+  FillStrokeProperties &
+  ShadowProperties &
+  CompositingProperties;
 
 export default class Canvas {
   _target: HTMLCanvasElement;
@@ -70,10 +66,10 @@ export default class Canvas {
   }
 
   // set this property value
-  attr(values: Partial<Attrs>): Canvas;
-  attr(key: keyof Attrs): any;
-  attr(key: keyof Attrs, value: any): Canvas;
-  attr(key: any, value?: any): any {
+  prop(values: Partial<Properties>): Canvas;
+  prop(key: keyof Properties): any;
+  prop(key: keyof Properties, value: any): Canvas;
+  prop(key: any, value?: any): any {
     if (value) {
       (this._ctx as any)[key] = value;
       return this;
@@ -94,19 +90,7 @@ export default class Canvas {
   }
 
   // draw line
-  line(x1: number, y1: number, x2: number, y2: number, style?: { type: BorderLineType; color: string }) {
-    if (style) {
-      this.beginPath().attr({ lineWidth: 1, strokeStyle: style.color });
-      if (style.type === 'medium') {
-        this.attr({ lineWidth: 2 });
-      } else if (style.type === 'thick') {
-        this.attr({ lineWidth: 3 });
-      } else if (style.type === 'dashed') {
-        this.setLineDash([3, 2]);
-      } else if (style.type === 'dotted') {
-        this.setLineDash([1, 1]);
-      }
-    }
+  line(x1: number, y1: number, x2: number, y2: number) {
     this.moveTo(x1, y1).lineTo(x2, y2).stroke();
     return this;
   }

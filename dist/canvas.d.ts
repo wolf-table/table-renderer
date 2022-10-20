@@ -1,33 +1,31 @@
-declare type LineStyleAttrs = {
+declare type LineProperties = {
     lineWidth: number;
     lineCap: 'butt' | 'round' | 'square';
     lineJoin: 'round' | 'bevel' | 'miter';
     miterLimit: number;
     lineDashOffset: number;
 };
-declare type TextStyleAttrs = {
+declare type TextProperties = {
     font: string;
     textAlign: 'start' | 'end' | 'left' | 'right' | 'center';
     textBaseline: 'top' | 'hanging' | 'middle' | 'alphabetic' | 'ideographic' | 'bottom';
     direction: 'ltr' | 'rtl' | 'inherit';
 };
-declare type FillStrokeStyleAttrs = {
+declare type FillStrokeProperties = {
     fillStyle: string;
     strokeStyle: string;
 };
-declare type ShadowAttrs = {
+declare type ShadowProperties = {
     shadowBlur: number;
     shadowColor: string;
     shadowOffsetX: number;
     shadowOffsetY: number;
 };
-declare type CompositingAttrs = {
+declare type CompositingProperties = {
     globalAlpha: number;
     globalCompositeOperation: string;
 };
-declare type Attrs = LineStyleAttrs & TextStyleAttrs & FillStrokeStyleAttrs & ShadowAttrs & CompositingAttrs;
-declare type BorderLineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
-export declare function borderLineTypeToWidth(lineType: BorderLineType): 1 | 2 | 3;
+declare type Properties = LineProperties & TextProperties & FillStrokeProperties & ShadowProperties & CompositingProperties;
 export default class Canvas {
     readonly target: HTMLCanvasElement;
     _target: HTMLCanvasElement;
@@ -35,14 +33,11 @@ export default class Canvas {
     _scale: number;
     constructor(target: HTMLCanvasElement, scale: number);
     size(width: number, height: number): this;
-    attr(values: Partial<Attrs>): Canvas;
-    attr(key: keyof Attrs): any;
-    attr(key: keyof Attrs, value: any): Canvas;
+    prop(values: Partial<Properties>): Canvas;
+    prop(key: keyof Properties): any;
+    prop(key: keyof Properties, value: any): Canvas;
     measureTextWidth(text: string): number;
-    line(x1: number, y1: number, x2: number, y2: number, style?: {
-        type: BorderLineType;
-        color: string;
-    }): this;
+    line(x1: number, y1: number, x2: number, y2: number): this;
     clearRect(x: number, y: number, width: number, height: number): this;
     fillRect(x: number, y: number, width: number, height: number): this;
     strokeRect(x: number, y: number, width: number, height: number): this;

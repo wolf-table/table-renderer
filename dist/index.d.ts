@@ -5,32 +5,34 @@ import Viewport from './viewport';
 import Area from './area';
 export declare type Align = 'left' | 'right' | 'center';
 export declare type VerticalAlign = 'top' | 'bottom' | 'middle';
-export declare type LineStyle = {
+export declare type LineStyle = 'solid' | 'dashed' | 'dotted';
+export declare type Line = {
     width: number;
     color: string;
+    style?: LineStyle;
 };
-export declare type LineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
 export declare type TextLineType = 'underline' | 'strikethrough';
 export declare type CellStyleBorder = {
-    left?: [LineType, string];
-    top?: [LineType, string];
-    right?: [LineType, string];
-    bottom?: [LineType, string];
+    left?: [BorderStyle, string];
+    top?: [BorderStyle, string];
+    right?: [BorderStyle, string];
+    bottom?: [BorderStyle, string];
 };
 export declare type BorderType = 'all' | 'inside' | 'horizontal' | 'vertical' | 'outside' | 'left' | 'top' | 'right' | 'bottom';
-export declare type Border = [string, BorderType, LineType, string];
+export declare type BorderStyle = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
+export declare type Border = [string, BorderType, BorderStyle, string];
 export declare type CellStyle = {
     bgcolor: string;
+    color: string;
     align: Align;
     valign: VerticalAlign;
     textwrap: boolean;
     underline: boolean;
     strikethrough: boolean;
-    color: string;
     bold: boolean;
     italic: boolean;
     fontSize: number;
-    fontName: string;
+    fontFamily: string;
     rotate?: number;
     padding?: [number, number];
 };
@@ -42,7 +44,7 @@ export declare type Cell = {
     [property: string]: any;
 } | string | number | null | undefined;
 export declare type CellGetter = (rowIndex: number, colIndex: number) => Cell;
-export declare type CellFormatter = (value: string, format?: string) => string;
+export declare type Formatter = (value: string, format?: string) => string;
 export declare type Row = {
     height: number;
     hide?: boolean;
@@ -63,14 +65,14 @@ export declare type RowHeader = {
     width: number;
     cols: number;
     cell: CellGetter;
-    cellTypeRenderer?: CellTypeRenderer;
+    cellRenderer?: CellRenderer;
     merges?: string[];
 };
 export declare type ColHeader = {
     height: number;
     rows: number;
     cell: CellGetter;
-    cellTypeRenderer?: CellTypeRenderer;
+    cellRenderer?: CellRenderer;
     merges?: string[];
 };
 export declare type Rect = {
@@ -86,8 +88,7 @@ export declare type AreaCell = {
 export declare type ViewportCell = {
     placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
-export declare type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => boolean;
-export declare type CellTypeRenderer = (type?: string) => CellTypeRender | null | undefined;
+export declare type CellRenderer = (canvas: Canvas, rect: Rect, cell: Cell, text: string) => boolean;
 /**
  * ----------------------------------------------------------------
  * |            | column header                                   |
@@ -141,19 +142,19 @@ export default class TableRenderer {
      * @returns Cell | string
      */
     _cell: CellGetter;
-    _cellTypeRenderer: CellTypeRenderer;
-    _cellFormatter: CellFormatter;
+    _cellRenderer: CellRenderer;
+    _formatter: Formatter;
     _merges: string[];
     _borders: Border[];
     _styles: Partial<CellStyle>[];
-    _lineStyle: LineStyle;
+    _line: Line;
     _cellStyle: CellStyle;
     _rowHeader: RowHeader;
     _colHeader: ColHeader;
-    _headerLineStyle: LineStyle;
+    _headerLine: Line;
     _headerCellStyle: CellStyle;
     _freeze: [number, number];
-    _freezeLineStyle: LineStyle;
+    _freezeLine: Line;
     _viewport: Viewport | null;
     constructor(container: string | HTMLCanvasElement, width: number, height: number);
     render(): this;
@@ -171,25 +172,25 @@ export default class TableRenderer {
     row(value: RowGetter): this;
     col(value: ColGetter): this;
     cell(value: (rowIndex: number, colIndex: number) => Cell): this;
-    cellTypeRenderer(value: CellTypeRenderer): this;
-    cellFormatter(value: CellFormatter): this;
+    cellRenderer(value: CellRenderer): this;
+    formatter(value: Formatter): this;
     merges(value?: string[]): this;
     styles(value?: Partial<CellStyle>[]): this;
     borders(value?: Border[]): this;
-    lineStyle(value: Partial<LineStyle>): this;
+    line(value: Partial<Line>): this;
     cellStyle(value: Partial<CellStyle>): this;
     rowHeader(value?: Partial<RowHeader>): this;
     colHeader(value?: Partial<ColHeader>): this;
-    headerLineStyle(value: Partial<LineStyle>): this;
+    headerLine(value: Partial<Line>): this;
     headerCellStyle(value?: Partial<CellStyle>): this;
     freeze(ref?: string): this;
-    freezeLineStyle(value: Partial<LineStyle>): this;
+    freezeLine(value: Partial<Line>): this;
     rowHeightAt(index: number): number;
     colWidthAt(index: number): number;
     get viewport(): Viewport | null;
     static create(container: string | HTMLCanvasElement, width: number, height: number): TableRenderer;
 }
-export { expr2xy, xy2expr, stringAt, Range, Viewport, Area, eachRanges, findRanges };
+export { expr2xy, xy2expr, stringAt, Canvas, Range, Viewport, Area, eachRanges, findRanges };
 declare global {
     interface Window {
         wolf: any;
