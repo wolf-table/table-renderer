@@ -381,58 +381,79 @@ export default class TableRenderer {
     return this;
   }
 
-  merges(value?: string[]) {
-    if (value) this._merges = value;
+  merges(value: string[]) {
+    this._merges = value;
     return this;
   }
 
-  styles(value?: Partial<Style>[]) {
-    if (value) this._styles = value;
+  styles(value: Partial<Style>[]) {
+    this._styles = value;
     return this;
   }
 
-  borders(value?: Border[]) {
-    if (value) this._borders = value;
+  borders(value: Border[]) {
+    this._borders = value;
     return this;
   }
 
-  gridline(value?: Partial<Gridline>) {
-    if (value) Object.assign(this._gridline, value);
+  gridline(): Gridline;
+  gridline(value: Partial<Gridline>): TableRenderer;
+  gridline(value?: Partial<Gridline>): any {
+    if (!value) return this._gridline;
+    Object.assign(this._gridline, value);
     return this;
   }
 
-  style(value?: Partial<Style>) {
-    if (value) Object.assign(this._style, value);
+  style(): Style;
+  style(value: Partial<Style>): TableRenderer;
+  style(value?: Partial<Style>): any {
+    if (!value) return this._style;
+    Object.assign(this._style, value);
     return this;
   }
 
-  rowHeader(value?: Partial<RowHeader>) {
-    if (value) Object.assign(this._rowHeader, value);
+  rowHeader(): RowHeader;
+  rowHeader(value: Partial<RowHeader>): TableRenderer;
+  rowHeader(value?: Partial<RowHeader>): any {
+    if (!value) return this._rowHeader;
+    Object.assign(this._rowHeader, value);
     return this;
   }
 
-  colHeader(value?: Partial<ColHeader>) {
-    if (value) Object.assign(this._colHeader, value);
+  colHeader(): ColHeader;
+  colHeader(value: Partial<ColHeader>): TableRenderer;
+  colHeader(value?: Partial<ColHeader>): any {
+    if (!value) return this._colHeader;
+    Object.assign(this._colHeader, value);
     return this;
   }
 
-  headerGridline(value?: Partial<Gridline>) {
-    if (value) Object.assign(this._headerGridline, value);
+  headerGridline(): Gridline;
+  headerGridline(value: Partial<Gridline>): TableRenderer;
+  headerGridline(value?: Partial<Gridline>): any {
+    if (!value) return this._headerGridline;
+    Object.assign(this._headerGridline, value);
     return this;
   }
 
-  headerStyle(value?: Partial<Style>) {
-    if (value) Object.assign(this._headerStyle, value);
+  headerStyle(): Style;
+  headerStyle(value: Partial<Style>): TableRenderer;
+  headerStyle(value?: Partial<Style>): any {
+    if (!value) return this._headerStyle;
+    Object.assign(this._headerStyle, value);
     return this;
   }
 
-  freeze(ref?: string) {
-    if (ref) this._freeze = expr2xy(ref);
+  freeze(ref: string) {
+    this._freeze = expr2xy(ref);
     return this;
   }
 
-  freezeGridline(value?: Partial<Gridline>) {
-    if (value) Object.assign(this._freezeGridline, value);
+  freezeGridline(): Gridline;
+  freezeGridline(value: Partial<Gridline>): TableRenderer;
+  freezeGridline(value?: Partial<Gridline>): any {
+    if (!value) return this._freezeGridline;
+    Object.assign(this._freezeGridline, value);
     return this;
   }
 
