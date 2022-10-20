@@ -6,7 +6,7 @@ import { borderRanges } from './border';
 import TableRenderer, {
   Cell,
   CellGetter,
-  CellStyle,
+  Style,
   ColGetter,
   Rect,
   RowGetter,
@@ -14,7 +14,7 @@ import TableRenderer, {
   BorderType,
   Formatter,
   CellRenderer,
-  BorderStyle,
+  BorderLineStyle,
   Gridline,
 } from '.';
 
@@ -45,11 +45,11 @@ function renderBorder(
   range: Range,
   borderRect: Rect,
   type: BorderType,
-  style: BorderStyle,
+  lineStyle: BorderLineStyle,
   color: string,
   autoAlign?: boolean
 ) {
-  const borderLineStyle = [style, color] as [BorderStyle, string];
+  const borderLineStyle = [lineStyle, color] as [BorderLineStyle, string];
   // if type === 'none', you can delete borders in ref(range)
   if (type === 'outside' || type === 'all') {
     cellBorderRender(canvas, borderRect, borderLineStyle, true);
@@ -106,9 +106,9 @@ function renderArea(
   cell: CellGetter,
   cellRenderer: CellRenderer | undefined,
   formatter: Formatter,
-  defaultCellStyle: CellStyle,
+  defaultStyle: Style,
   defaultGridline: Gridline,
-  styles: Partial<CellStyle>[],
+  styles: Partial<Style>[],
   merges?: string[],
   borders?: Border[],
   row?: RowGetter,
@@ -120,7 +120,7 @@ function renderArea(
   canvas.rect(0, 0, area.width, area.height).clip();
 
   const mergeCellStyle = (r: number, c: number, ce: Cell) => {
-    const cstyle = { ...defaultCellStyle };
+    const cstyle = { ...defaultStyle };
     if (row) {
       const r1 = row(r);
       if (r1 && r1.style !== undefined) Object.assign(cstyle, styles[r1.style]);
@@ -172,7 +172,7 @@ function renderBody(canvas: Canvas, area: Area | null, table: TableRenderer) {
     table._cell,
     table._cellRenderer,
     table._formatter,
-    table._cellStyle,
+    table._style,
     table._gridline,
     table._styles,
     table._merges,
@@ -191,7 +191,7 @@ function renderRowHeader(canvas: Canvas, area: Area | null, table: TableRenderer
       cell,
       cellRenderer,
       (v) => v,
-      table._headerCellStyle,
+      table._headerStyle,
       table._headerGridline,
       table._styles,
       merges
@@ -208,7 +208,7 @@ function renderColHeader(canvas: Canvas, area: Area | null, table: TableRenderer
       cell,
       cellRenderer,
       (v) => v,
-      table._headerCellStyle,
+      table._headerStyle,
       table._headerGridline,
       table._styles,
       merges
@@ -269,7 +269,7 @@ export function render(table: TableRenderer) {
         () => '',
         undefined,
         (v) => v,
-        table._headerCellStyle,
+        table._headerStyle,
         table._headerGridline,
         table._styles
       );

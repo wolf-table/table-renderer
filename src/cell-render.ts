@@ -1,14 +1,14 @@
 import {
   Align,
-  CellStyle,
+  Style,
   Rect,
   VerticalAlign,
   TextLineType,
-  CellStyleBorder,
+  BorderLineStyle,
   Cell,
   Formatter,
   CellRenderer,
-  BorderStyle,
+  BorderLine,
 } from '.';
 import Canvas from './canvas';
 
@@ -97,14 +97,14 @@ function fontString(family: string, size: number, italic: boolean, bold: boolean
 export function cellBorderRender(
   canvas: Canvas,
   rect: Rect,
-  border: CellStyleBorder | [BorderStyle, string],
+  borderLine: BorderLine | [BorderLineStyle, string],
   autoAlign: boolean = false
 ) {
   let top, right, bottom, left;
-  if (Array.isArray(border)) {
-    top = right = bottom = left = border;
+  if (Array.isArray(borderLine)) {
+    top = right = bottom = left = borderLine;
   } else {
-    ({ top, right, bottom, left } = border);
+    ({ top, right, bottom, left } = borderLine);
   }
 
   canvas.save().beginPath().translate(rect.x, rect.y);
@@ -150,7 +150,7 @@ export function cellRender(
   canvas: Canvas,
   cell: Cell,
   rect: Rect,
-  style: CellStyle,
+  style: Style,
   cellRenderer: CellRenderer | undefined,
   formatter: Formatter
 ) {

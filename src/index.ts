@@ -18,13 +18,6 @@ export type Gridline = {
 
 export type TextLineType = 'underline' | 'strikethrough';
 
-export type CellStyleBorder = {
-  left?: [BorderStyle, string];
-  top?: [BorderStyle, string];
-  right?: [BorderStyle, string];
-  bottom?: [BorderStyle, string];
-};
-
 export type BorderType =
   | 'all'
   | 'inside'
@@ -35,11 +28,20 @@ export type BorderType =
   | 'top'
   | 'right'
   | 'bottom';
-export type BorderStyle = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
-// ref, type, style, color
-export type Border = [string, BorderType, BorderStyle, string];
 
-export type CellStyle = {
+export type BorderLineStyle = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
+
+export type BorderLine = {
+  left?: [BorderLineStyle, string];
+  top?: [BorderLineStyle, string];
+  right?: [BorderLineStyle, string];
+  bottom?: [BorderLineStyle, string];
+};
+
+// ref, type, style, color
+export type Border = [string, BorderType, BorderLineStyle, string];
+
+export type Style = {
   bgcolor: string;
   color: string;
   align: Align;
@@ -212,14 +214,14 @@ export default class TableRenderer {
 
   _borders: Border[] = [];
 
-  _styles: Partial<CellStyle>[] = [];
+  _styles: Partial<Style>[] = [];
 
   _gridline: Gridline = {
     width: 1,
     color: '#e6e6e6',
   };
 
-  _cellStyle: CellStyle = {
+  _style: Style = {
     bgcolor: '#ffffff',
     align: 'left',
     valign: 'middle',
@@ -257,7 +259,7 @@ export default class TableRenderer {
     color: '#e6e6e6',
   };
 
-  _headerCellStyle: CellStyle = {
+  _headerStyle: Style = {
     bgcolor: '#f4f5f8',
     align: 'center',
     valign: 'middle',
@@ -384,7 +386,7 @@ export default class TableRenderer {
     return this;
   }
 
-  styles(value?: Partial<CellStyle>[]) {
+  styles(value?: Partial<Style>[]) {
     if (value) this._styles = value;
     return this;
   }
@@ -394,13 +396,13 @@ export default class TableRenderer {
     return this;
   }
 
-  gridline(value: Partial<Gridline>) {
-    Object.assign(this._gridline, value);
+  gridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._gridline, value);
     return this;
   }
 
-  cellStyle(value: Partial<CellStyle>) {
-    Object.assign(this._cellStyle, value);
+  style(value?: Partial<Style>) {
+    if (value) Object.assign(this._style, value);
     return this;
   }
 
@@ -414,13 +416,13 @@ export default class TableRenderer {
     return this;
   }
 
-  headerGridline(value: Partial<Gridline>) {
-    Object.assign(this._headerGridline, value);
+  headerGridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._headerGridline, value);
     return this;
   }
 
-  headerCellStyle(value?: Partial<CellStyle>) {
-    if (value) Object.assign(this._headerCellStyle, value);
+  headerStyle(value?: Partial<Style>) {
+    if (value) Object.assign(this._headerStyle, value);
     return this;
   }
 
@@ -429,8 +431,8 @@ export default class TableRenderer {
     return this;
   }
 
-  freezeGridline(value: Partial<Gridline>) {
-    Object.assign(this._freezeGridline, value);
+  freezeGridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._freezeGridline, value);
     return this;
   }
 
