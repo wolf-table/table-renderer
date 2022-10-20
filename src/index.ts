@@ -396,64 +396,43 @@ export default class TableRenderer {
     return this;
   }
 
-  gridline(): Gridline;
-  gridline(value: Partial<Gridline>): TableRenderer;
-  gridline(value?: Partial<Gridline>): any {
-    if (!value) return this._gridline;
-    Object.assign(this._gridline, value);
+  gridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._gridline, value);
     return this;
   }
 
-  style(): Style;
-  style(value: Partial<Style>): TableRenderer;
-  style(value?: Partial<Style>): any {
-    if (!value) return this._style;
-    Object.assign(this._style, value);
+  style(value?: Partial<Style>) {
+    if (value) Object.assign(this._style, value);
     return this;
   }
 
-  rowHeader(): RowHeader;
-  rowHeader(value: Partial<RowHeader>): TableRenderer;
-  rowHeader(value?: Partial<RowHeader>): any {
-    if (!value) return this._rowHeader;
-    Object.assign(this._rowHeader, value);
+  rowHeader(value?: Partial<RowHeader>) {
+    if (value) Object.assign(this._rowHeader, value);
     return this;
   }
 
-  colHeader(): ColHeader;
-  colHeader(value: Partial<ColHeader>): TableRenderer;
-  colHeader(value?: Partial<ColHeader>): any {
-    if (!value) return this._colHeader;
-    Object.assign(this._colHeader, value);
+  colHeader(value?: Partial<ColHeader>) {
+    if (value) Object.assign(this._colHeader, value);
     return this;
   }
 
-  headerGridline(): Gridline;
-  headerGridline(value: Partial<Gridline>): TableRenderer;
-  headerGridline(value?: Partial<Gridline>): any {
-    if (!value) return this._headerGridline;
-    Object.assign(this._headerGridline, value);
+  headerGridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._headerGridline, value);
     return this;
   }
 
-  headerStyle(): Style;
-  headerStyle(value: Partial<Style>): TableRenderer;
-  headerStyle(value?: Partial<Style>): any {
-    if (!value) return this._headerStyle;
-    Object.assign(this._headerStyle, value);
+  headerStyle(value?: Partial<Style>) {
+    if (value) Object.assign(this._headerStyle, value);
     return this;
   }
 
-  freeze(ref: string) {
-    this._freeze = expr2xy(ref);
+  freeze(ref?: string) {
+    if (ref) this._freeze = expr2xy(ref);
     return this;
   }
 
-  freezeGridline(): Gridline;
-  freezeGridline(value: Partial<Gridline>): TableRenderer;
-  freezeGridline(value?: Partial<Gridline>): any {
-    if (!value) return this._freezeGridline;
-    Object.assign(this._freezeGridline, value);
+  freezeGridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._freezeGridline, value);
     return this;
   }
 
