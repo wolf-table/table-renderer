@@ -59,7 +59,7 @@ export type Style = {
 
 export type Cell =
   | {
-      value: string | number;
+      value?: string | number;
       type?: string;
       style?: number;
       format?: string;
