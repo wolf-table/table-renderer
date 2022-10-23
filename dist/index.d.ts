@@ -5,23 +5,23 @@ import Viewport from './viewport';
 import Area from './area';
 export declare type Align = 'left' | 'right' | 'center';
 export declare type VerticalAlign = 'top' | 'bottom' | 'middle';
-export declare type LineStyle = 'solid' | 'dashed' | 'dotted';
-export declare type Line = {
+export declare type GridlineStyle = 'solid' | 'dashed' | 'dotted';
+export declare type Gridline = {
     width: number;
     color: string;
-    style?: LineStyle;
+    style?: GridlineStyle;
 };
 export declare type TextLineType = 'underline' | 'strikethrough';
-export declare type CellStyleBorder = {
-    left?: [BorderStyle, string];
-    top?: [BorderStyle, string];
-    right?: [BorderStyle, string];
-    bottom?: [BorderStyle, string];
-};
 export declare type BorderType = 'all' | 'inside' | 'horizontal' | 'vertical' | 'outside' | 'left' | 'top' | 'right' | 'bottom';
-export declare type BorderStyle = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
-export declare type Border = [string, BorderType, BorderStyle, string];
-export declare type CellStyle = {
+export declare type BorderLineStyle = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
+export declare type BorderLine = {
+    left?: [BorderLineStyle, string];
+    top?: [BorderLineStyle, string];
+    right?: [BorderLineStyle, string];
+    bottom?: [BorderLineStyle, string];
+};
+export declare type Border = [string, BorderType, BorderLineStyle, string];
+export declare type Style = {
     bgcolor: string;
     color: string;
     align: Align;
@@ -37,7 +37,7 @@ export declare type CellStyle = {
     padding?: [number, number];
 };
 export declare type Cell = {
-    value: string | number;
+    value?: string | number;
     type?: string;
     style?: number;
     format?: string;
@@ -146,15 +146,15 @@ export default class TableRenderer {
     _formatter: Formatter;
     _merges: string[];
     _borders: Border[];
-    _styles: Partial<CellStyle>[];
-    _line: Line;
-    _cellStyle: CellStyle;
+    _styles: Partial<Style>[];
+    _gridline: Gridline;
+    _style: Style;
     _rowHeader: RowHeader;
     _colHeader: ColHeader;
-    _headerLine: Line;
-    _headerCellStyle: CellStyle;
+    _headerGridline: Gridline;
+    _headerStyle: Style;
     _freeze: [number, number];
-    _freezeLine: Line;
+    _freezeGridline: Gridline;
     _viewport: Viewport | null;
     constructor(container: string | HTMLCanvasElement, width: number, height: number);
     render(): this;
@@ -174,17 +174,17 @@ export default class TableRenderer {
     cell(value: (rowIndex: number, colIndex: number) => Cell): this;
     cellRenderer(value: CellRenderer): this;
     formatter(value: Formatter): this;
-    merges(value?: string[]): this;
-    styles(value?: Partial<CellStyle>[]): this;
-    borders(value?: Border[]): this;
-    line(value: Partial<Line>): this;
-    cellStyle(value: Partial<CellStyle>): this;
+    merges(value: string[]): this;
+    styles(value: Partial<Style>[]): this;
+    borders(value: Border[]): this;
+    gridline(value?: Partial<Gridline>): this;
+    style(value?: Partial<Style>): this;
     rowHeader(value?: Partial<RowHeader>): this;
     colHeader(value?: Partial<ColHeader>): this;
-    headerLine(value: Partial<Line>): this;
-    headerCellStyle(value?: Partial<CellStyle>): this;
+    headerGridline(value?: Partial<Gridline>): this;
+    headerStyle(value?: Partial<Style>): this;
     freeze(ref?: string): this;
-    freezeLine(value: Partial<Line>): this;
+    freezeGridline(value?: Partial<Gridline>): this;
     rowHeightAt(index: number): number;
     colWidthAt(index: number): number;
     get viewport(): Viewport | null;
