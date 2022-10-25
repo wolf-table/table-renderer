@@ -42,7 +42,7 @@ export type BorderLine = {
 export type Border = [string, BorderType, BorderLineStyle, string];
 
 export type Style = {
-  bgcolor: string;
+  bgcolor?: string;
   color: string;
   align: Align;
   valign: VerticalAlign;
@@ -152,6 +152,8 @@ export type CellRenderer = (canvas: Canvas, rect: Rect, cell: Cell, text: string
 export default class TableRenderer {
   _target: HTMLCanvasElement;
 
+  _bgcolor = '#ffffff';
+
   // table width
   _width = 0;
 
@@ -222,7 +224,6 @@ export default class TableRenderer {
   };
 
   _style: Style = {
-    bgcolor: '#ffffff',
     align: 'left',
     valign: 'middle',
     textwrap: false,
@@ -260,7 +261,7 @@ export default class TableRenderer {
   };
 
   _headerStyle: Style = {
-    bgcolor: '#f4f5f8',
+    bgcolor: '#f4f5f8cc',
     align: 'center',
     valign: 'middle',
     textwrap: true,
@@ -298,6 +299,11 @@ export default class TableRenderer {
   render() {
     this._viewport = new Viewport(this);
     render(this);
+    return this;
+  }
+
+  bgcolor(value: string) {
+    this._bgcolor = value;
     return this;
   }
 
@@ -441,7 +447,7 @@ export default class TableRenderer {
     const { _row } = this;
     if (_row) {
       const r = _row(index);
-      if (r) return r.hide ? 0 : r.height;
+      if (r) return r.hide === true ? 0 : r.height;
     }
     return this._rowHeight;
   }
@@ -450,7 +456,7 @@ export default class TableRenderer {
     const { _col } = this;
     if (_col) {
       const c = _col(index);
-      if (c) return c.hide ? 0 : c.width;
+      if (c) return c.hide === true ? 0 : c.width;
     }
     return this._colWidth;
   }

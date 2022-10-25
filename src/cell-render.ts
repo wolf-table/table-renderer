@@ -184,7 +184,8 @@ export function cellRender(
   canvas.save().beginPath().translate(rect.x, rect.y);
 
   // clip
-  canvas.prop('fillStyle', bgcolor).rect(0, 0, rect.width, rect.height).clip().fill();
+  canvas.rect(0, 0, rect.width, rect.height).clip();
+  if (bgcolor) canvas.prop('fillStyle', bgcolor).fill();
 
   // rotate
   if (rotate && rotate > 0) {

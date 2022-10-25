@@ -7,7 +7,7 @@ const longText = {
 function cellText(ri: number, ci: number): string | Cell {
   if (ri === 8 && ci === 1) return longText;
   const value = `${ri}-${ci}`;
-  if (ri <= 14 && ri >= 12 && ci <= 12 && ci >= 11) {
+  if (ri <= 14 && ri >= 13 && ci <= 12 && ci >= 9) {
     return { value, style: 1 };
   }
   if (ri === 4 && ci === 4) return { type: 'select', value };
@@ -37,6 +37,7 @@ function cellRenderer(canvas: Canvas, { x, y, width, height }, cell) {
 
 TableRender.create('#table', 1400, 800)
   .scale(1)
+  .bgcolor('#fff')
   .colHeader({
     height: 50,
     rows: 2,
@@ -53,8 +54,7 @@ TableRender.create('#table', 1400, 800)
       return true;
     },
   })
-  .gridline({ width: 0 })
-  .merges(['I10:J11', 'B9:D10', 'G21:H22', 'J22:L23'])
+  .merges(['I10:J11', 'B9:D10', 'G21:H22', 'J22:L23', 'I3:K4'])
   .borders([
     ['G3', 'all', 'dashed', '#188038'],
     ['B9', 'outside', 'thick', '#188038'],
@@ -63,7 +63,7 @@ TableRender.create('#table', 1400, 800)
     ['E14:J16', 'all', 'dotted', 'red'],
     ['E19:M24', 'all', 'thick', '#188038'],
   ])
-  .startRow(1)
+  // .startRow(1)
   .rows(50)
   .styles([{ bold: true }, { bgcolor: '#ffc107' }])
   .col((index) => (index == 5 ? { width: 100, hide: true } : undefined))

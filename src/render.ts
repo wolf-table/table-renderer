@@ -20,22 +20,18 @@ import TableRenderer, {
 
 function renderLines(canvas: Canvas, { width, color }: Gridline, cb: () => void) {
   if (width > 0) {
-    canvas.save().beginPath().prop({ lineWidth: width, strokeStyle: color });
+    canvas
+      .save()
+      .beginPath()
+      .prop({ lineWidth: width - 0.5, strokeStyle: color });
     cb();
     canvas.restore();
   }
 }
 
-function renderGridLines(canvas: Canvas, area: Area, gridline: Gridline) {
+function renderCellGridline(canvas: Canvas, gridline: Gridline, { x, y, width, height }: Rect) {
   renderLines(canvas, gridline, () => {
-    // draw row lines
-    area.eachRow((row, y, h) => {
-      canvas.line(0, y + h, area.width, y + h);
-    });
-    // draw col lines
-    area.eachCol((col, x, w) => {
-      canvas.line(x + w, 0, x + w, area.height);
-    });
+    canvas.translate(x, y).line(width, 0, width, height).line(0, height, width, height);
   });
 }
 
@@ -101,26 +97,54 @@ function renderBorders(canvas: Canvas, area: Area, borders: Border[] | undefined
 }
 
 function renderArea(
+  type: 'body' | 'row-header' | 'col-header',
   canvas: Canvas,
   area: Area | null,
-  cell: CellGetter,
-  cellRenderer: CellRenderer | undefined,
-  formatter: Formatter,
-  defaultStyle: Style,
-  defaultGridline: Gridline,
-  styles: Partial<Style>[],
-  merges?: string[],
-  borders?: Border[],
-  row?: RowGetter,
-  col?: ColGetter
+  renderer: TableRenderer
 ) {
   if (!area) return;
-  canvas.save().translate(area.x, area.y);
 
-  canvas.rect(0, 0, area.width, area.height).clip();
+  let cell: CellGetter;
+  let cellRenderer: CellRenderer | undefined;
+  let formatter: Formatter = (v) => v;
+  let style: Style = renderer._headerStyle;
+  let gridline: Gridline = renderer._headerGridline;
+  let styles: Partial<Style>[] = renderer._styles;
+  let merges: string[] | undefined;
+  let borders: Border[] | undefined;
+  let row: RowGetter | undefined;
+  let col: ColGetter | undefined;
+
+  const { _rowHeader, _colHeader } = renderer;
+  if (type === 'row-header') {
+    if (_rowHeader.width <= 0) return;
+    ({ cell, merges, cellRenderer } = _rowHeader);
+  } else if (type === 'col-header') {
+    if (_colHeader.height <= 0) return;
+    ({ cell, merges, cellRenderer } = _colHeader);
+  } else {
+    cell = renderer._cell;
+    cellRenderer = renderer._cellRenderer;
+    formatter = renderer._formatter;
+    style = renderer._style;
+    gridline = renderer._gridline;
+    styles = renderer._styles;
+    merges = renderer._merges;
+    borders = renderer._borders;
+    row = renderer._row;
+    col = renderer._col;
+  }
+
+  canvas
+    .save()
+    .translate(area.x, area.y)
+    .prop('fillStyle', renderer._bgcolor)
+    .rect(0, 0, area.width, area.height)
+    .fill()
+    .clip();
 
   const mergeCellStyle = (r: number, c: number, ce: Cell) => {
-    const cstyle = { ...defaultStyle };
+    const cstyle = { ...style };
     if (row) {
       const r1 = row(r);
       if (r1 && r1.style !== undefined) Object.assign(cstyle, styles[r1.style]);
@@ -135,29 +159,44 @@ function renderArea(
     return cstyle;
   };
 
-  // render cells
-  area.each((r, c, rect) => {
-    const cellv = cell(r, c);
-    const cellStyle = mergeCellStyle(r, c, cellv);
-    cellRender(canvas, cellv, rect, cellStyle, cellRenderer, formatter);
-  });
-
-  // render lines
-  renderGridLines(canvas, area, defaultGridline);
-
   const areaMerges: Range[] = [];
-  // render merges
+  const areaMergeRenderParams: [Cell, Rect, Style][] = [];
+  const cellMerges = new Set();
   if (merges) {
     eachRanges(merges, (it) => {
       if (it.intersects(area.range)) {
         const cellv = cell(it.startRow, it.startCol);
         const cellStyle = mergeCellStyle(it.startRow, it.startCol, cellv);
         const cellRect = area.rect(it);
-        cellRender(canvas, cellv, cellRect, cellStyle, cellRenderer, formatter);
+        areaMergeRenderParams.push([cellv, cellRect, cellStyle]);
         areaMerges.push(it);
+        it.each((r, c) => {
+          cellMerges.add(`${r}_${c}`);
+        });
       }
     });
   }
+
+  const _render = (cell: Cell, rect: Rect, cstyle: Style) => {
+    if (type === 'body') {
+      renderCellGridline(canvas, gridline, rect);
+      cellRender(canvas, cell, rect, cstyle, cellRenderer, formatter);
+    } else {
+      cellRender(canvas, cell, rect, cstyle, cellRenderer, formatter);
+      renderCellGridline(canvas, gridline, rect);
+    }
+  };
+
+  // render cells
+  area.each((r, c, rect) => {
+    if (!cellMerges.has(`${r}_${c}`)) {
+      const cellv = cell(r, c);
+      _render(cellv, rect, mergeCellStyle(r, c, cellv));
+    }
+  });
+
+  // render merges
+  areaMergeRenderParams.forEach((it) => _render(...it));
 
   // render borders
   renderBorders(canvas, area, borders, areaMerges);
@@ -165,59 +204,8 @@ function renderArea(
   canvas.restore();
 }
 
-function renderBody(canvas: Canvas, area: Area | null, table: TableRenderer) {
-  renderArea(
-    canvas,
-    area,
-    table._cell,
-    table._cellRenderer,
-    table._formatter,
-    table._style,
-    table._gridline,
-    table._styles,
-    table._merges,
-    table._borders,
-    table._row,
-    table._col
-  );
-}
-
-function renderRowHeader(canvas: Canvas, area: Area | null, table: TableRenderer) {
-  const { cell, width, merges, cellRenderer } = table._rowHeader;
-  if (width > 0) {
-    renderArea(
-      canvas,
-      area,
-      cell,
-      cellRenderer,
-      (v) => v,
-      table._headerStyle,
-      table._headerGridline,
-      table._styles,
-      merges
-    );
-  }
-}
-
-function renderColHeader(canvas: Canvas, area: Area | null, table: TableRenderer) {
-  const { cell, height, merges, cellRenderer } = table._colHeader;
-  if (height > 0) {
-    renderArea(
-      canvas,
-      area,
-      cell,
-      cellRenderer,
-      (v) => v,
-      table._headerStyle,
-      table._headerGridline,
-      table._styles,
-      merges
-    );
-  }
-}
-
-export function render(table: TableRenderer) {
-  const { _width, _height, _target, _scale, _viewport, _freeze, _rowHeader, _colHeader } = table;
+export function render(renderer: TableRenderer) {
+  const { _width, _height, _target, _scale, _viewport, _freeze, _rowHeader, _colHeader } = renderer;
   if (_viewport) {
     const canvas = new Canvas(_target, _scale);
     canvas.size(_width, _height);
@@ -226,25 +214,25 @@ export function render(table: TableRenderer) {
     const [headerArea1, headerArea21, headerArea23, headerArea3] = _viewport.headerAreas;
 
     // render-4
-    renderBody(canvas, area4, table);
+    renderArea('body', canvas, area4, renderer);
 
     // render-1
-    renderBody(canvas, area1, table);
-    renderColHeader(canvas, headerArea1, table);
+    renderArea('body', canvas, area1, renderer);
+    renderArea('col-header', canvas, headerArea1, renderer);
 
     // render-3
-    renderBody(canvas, area3, table);
-    renderRowHeader(canvas, headerArea3, table);
+    renderArea('body', canvas, area3, renderer);
+    renderArea('row-header', canvas, headerArea3, renderer);
 
     // render 2
-    renderBody(canvas, area2, table);
-    renderColHeader(canvas, headerArea21, table);
-    renderRowHeader(canvas, headerArea23, table);
+    renderArea('body', canvas, area2, renderer);
+    renderArea('col-header', canvas, headerArea21, renderer);
+    renderArea('row-header', canvas, headerArea23, renderer);
 
     // render freeze
     const [cols, rows] = _freeze;
     if (cols > 0 || rows > 0) {
-      renderLines(canvas, table._freezeGridline, () => {
+      renderLines(canvas, renderer._freezeGridline, () => {
         if (cols > 0) canvas.line(0, area4.y, _width, area4.y);
         if (rows > 0) canvas.line(area4.x, 0, area4.x, _height);
       });
@@ -253,26 +241,13 @@ export function render(table: TableRenderer) {
     // render left-top
     const { x, y } = area2;
     if (x > 0 && y > 0) {
-      const area0 = Area.create(
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        () => _colHeader.height,
-        () => _rowHeader.width
-      );
-      renderArea(
-        canvas,
-        area0,
-        () => '',
-        undefined,
-        (v) => v,
-        table._headerStyle,
-        table._headerGridline,
-        table._styles
-      );
+      const { height } = _colHeader;
+      const { width } = _rowHeader;
+      const { bgcolor } = renderer._headerStyle;
+      if (bgcolor) canvas.save().prop({ fillStyle: bgcolor }).rect(0, 0, width, height).fill().restore();
+      renderLines(canvas, renderer._headerGridline, () => {
+        canvas.line(0, height, width, height).line(width, 0, width, height);
+      });
     }
   }
 }

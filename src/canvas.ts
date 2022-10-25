@@ -171,12 +171,12 @@ export default class Canvas {
   }
 
   bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number) {
-    this.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+    this._ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
     return this;
   }
 
   quadraticCurveTo(cpx: number, cpy: number, x: number, y: number) {
-    this.quadraticCurveTo(cpx, cpy, x, y);
+    this._ctx.quadraticCurveTo(cpx, cpy, x, y);
     return this;
   }
 
