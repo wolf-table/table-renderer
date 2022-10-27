@@ -86,11 +86,11 @@ export default class Range {
     );
   }
 
-  intersectsRow(startRow: number, endRow: number) {
+  intersectsRow(startRow: number, endRow: number): boolean {
     return this.startRow <= endRow && startRow <= this.endRow;
   }
 
-  intersectsCol(startCol: number, endCol: number) {
+  intersectsCol(startCol: number, endCol: number): boolean {
     return this.startCol <= endCol && startCol <= this.endCol;
   }
 
@@ -108,7 +108,7 @@ export default class Range {
    * @param {Range} other
    * @returns {Range} the new range
    */
-  intersection(other: Range) {
+  intersection(other: Range): Range {
     return new Range(
       other.startRow < this.startRow ? this.startRow : other.startRow,
       other.startCol < this.startCol ? this.startCol : other.startCol,
@@ -135,7 +135,7 @@ export default class Range {
   // difference
   difference(other: Range): Range[] {
     const ret: Range[] = [];
-    if (!this.intersects(other)) return [];
+    if (!this.intersects(other)) return ret;
     const { startRow, startCol, endRow, endCol } = this;
     const nOther = this.intersection(other);
     return [
@@ -144,6 +144,17 @@ export default class Range {
       new Range(nOther.startRow, startCol, nOther.endRow, nOther.startCol - 1), // left
       new Range(nOther.startRow, nOther.endCol + 1, nOther.endRow, endCol), // right
     ].filter((it) => it.rows >= 0 && it.cols >= 0);
+  }
+
+  touches(other: Range): boolean {
+    return (
+      (other.startRow === this.startRow &&
+        other.endRow === this.endRow &&
+        (other.endCol + 1 === this.startCol || this.endCol + 1 === other.startCol)) ||
+      (other.startCol === this.startCol &&
+        other.endCol === this.endCol &&
+        (other.endRow + 1 === this.startRow || this.endRow + 1 === this.startCol))
+    );
   }
 
   /**
@@ -191,7 +202,7 @@ export default class Range {
     return new Range(this.startRow, this.startCol, this.endRow, this.endCol);
   }
 
-  toString() {
+  toString(): string {
     let ref = xy2expr(this.startCol, this.startRow);
     if (this.multiple) {
       ref += `:${xy2expr(this.endCol, this.endRow)}`;
@@ -199,7 +210,7 @@ export default class Range {
     return ref;
   }
 
-  equals(other: Range) {
+  equals(other: Range): boolean {
     return (
       this.startRow === other.startRow &&
       this.startCol === other.startCol &&
