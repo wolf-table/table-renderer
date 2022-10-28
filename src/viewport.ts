@@ -40,7 +40,7 @@ export default class Viewport {
     const [startRow4, startCol4] = [frows + render._scrollRows, fcols + render._scrollCols];
 
     // endRow
-    let y = area2.height;
+    let y = area2.height + ty;
     let endRow = startRow4;
     while (y < render._height && endRow < _rows) {
       y += getRowHeight(endRow);
@@ -48,7 +48,7 @@ export default class Viewport {
     }
 
     // endCol
-    let x = area2.width;
+    let x = area2.width + tx;
     let endCol = startCol4;
     while (x < render._width && endCol < _cols) {
       x += getColWidth(endCol);
