@@ -155,12 +155,10 @@ export function cellRender(
   formatter: Formatter
 ) {
   let text = '';
-  let type = undefined;
   if (cell) {
     if (typeof cell === 'string' || typeof cell === 'number') {
       text = formatter(`${cell}`);
     } else {
-      type = cell.type;
       text = formatter((cell.value || '') + '', cell.format);
     }
   }
