@@ -4,10 +4,10 @@ export default class Area {
     readonly range: Range;
     readonly x: number;
     readonly y: number;
-    readonly rowHeight: (index: number) => number;
-    readonly colWidth: (index: number) => number;
     width: number;
     height: number;
+    readonly rowHeight: (index: number) => number;
+    readonly colWidth: (index: number) => number;
     rowMap: Map<number, {
         y: number;
         height: number;
@@ -16,7 +16,7 @@ export default class Area {
         x: number;
         width: number;
     }>;
-    constructor(range: Range, x: number, y: number, rowHeight: (index: number) => number, colWidth: (index: number) => number);
+    constructor(range: Range, x: number, y: number, width: number, height: number, rowHeight: (index: number) => number, colWidth: (index: number) => number);
     /**
      * check whether or not x contained in area
      * @param {int} x offset on x-axis
@@ -51,5 +51,5 @@ export default class Area {
     };
     cellAtCache: AreaCell | null;
     cellAt(x: number, y: number): AreaCell;
-    static create(startRow: number, startCol: number, endRow: number, endCol: number, x: number, y: number, rowHeight: (index: number) => number, colWidth: (index: number) => number): Area;
+    static create(startRow: number, startCol: number, endRow: number, endCol: number, x: number, y: number, width: number, height: number, rowHeight: (index: number) => number, colWidth: (index: number) => number): Area;
 }

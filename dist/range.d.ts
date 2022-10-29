@@ -67,6 +67,7 @@ export default class Range {
      */
     union(other: Range): Range;
     difference(other: Range): Range[];
+    touches(other: Range): boolean;
     /**
      * @param {Function} cb (row) => {}
      * @returns this

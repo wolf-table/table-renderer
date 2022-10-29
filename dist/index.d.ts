@@ -22,7 +22,7 @@ export declare type BorderLine = {
 };
 export declare type Border = [string, BorderType, BorderLineStyle, string];
 export declare type Style = {
-    bgcolor: string;
+    bgcolor?: string;
     color: string;
     align: Align;
     valign: VerticalAlign;
@@ -112,6 +112,7 @@ export declare type CellRenderer = (canvas: Canvas, rect: Rect, cell: Cell, text
  */
 export default class TableRenderer {
     _target: HTMLCanvasElement;
+    _bgcolor: string;
     _width: number;
     _height: number;
     _scale: number;
@@ -158,6 +159,7 @@ export default class TableRenderer {
     _viewport: Viewport | null;
     constructor(container: string | HTMLCanvasElement, width: number, height: number);
     render(): this;
+    bgcolor(value: string): this;
     width(value: number): this;
     height(value: number): this;
     scale(value: number): this;

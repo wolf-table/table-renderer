@@ -2,8 +2,6 @@ import { Rect, AreaCell } from '.';
 import Range from './range';
 
 export default class Area {
-  width = 0;
-  height = 0;
   // { rowIndex: { y, height }}
   rowMap = new Map<number, { y: number; height: number }>();
   // { colIndex: { x, width }}
@@ -13,20 +11,27 @@ export default class Area {
     public readonly range: Range,
     public readonly x: number,
     public readonly y: number,
+    public width: number,
+    public height: number,
     public readonly rowHeight: (index: number) => number,
     public readonly colWidth: (index: number) => number
   ) {
     // init width, height and set rowMap, colMap
+    let totalHeight = 0;
     range.eachRow((index) => {
       const height = rowHeight(index);
-      this.rowMap.set(index, { y: this.height, height });
-      this.height += height;
+      this.rowMap.set(index, { y: totalHeight, height });
+      totalHeight += height;
     });
+    if (this.height <= 0) this.height = totalHeight;
+
+    let totalWidth = 0;
     range.eachCol((index) => {
       const width = colWidth(index);
-      this.colMap.set(index, { x: this.width, width });
-      this.width += width;
+      this.colMap.set(index, { x: totalWidth, width });
+      totalWidth += width;
     });
+    if (this.width <= 0) this.width = totalWidth;
   }
 
   /**
@@ -167,9 +172,11 @@ export default class Area {
     endCol: number,
     x: number,
     y: number,
+    width: number,
+    height: number,
     rowHeight: (index: number) => number,
     colWidth: (index: number) => number
   ) {
-    return new Area(new Range(startRow, startCol, endRow, endCol), x, y, rowHeight, colWidth);
+    return new Area(new Range(startRow, startCol, endRow, endCol), x, y, width, height, rowHeight, colWidth);
   }
 }
