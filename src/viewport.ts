@@ -28,7 +28,7 @@ export default class Viewport {
     this._render = render;
 
     const [tx, ty] = [render._rowHeader.width, render._colHeader.height];
-    const [fcols, frows] = render._freeze;
+    const [frow, fcol] = render._freeze;
     const { _startRow, _startCol, _rows, _cols, _width, _height } = render;
 
     const getRowHeight = (index: number) => render.rowHeightAt(index);
@@ -38,8 +38,8 @@ export default class Viewport {
     const area2 = Area.create(
       _startRow,
       _startCol,
-      frows - 1,
-      fcols - 1,
+      frow - 1,
+      fcol - 1,
       tx,
       ty,
       0,
@@ -48,12 +48,12 @@ export default class Viewport {
       getColWidth
     );
 
-    const [startRow4, startCol4] = [frows + render._scrollRows, fcols + render._scrollCols];
+    const [startRow4, startCol4] = [frow + render._scrollRows, fcol + render._scrollCols];
 
     // endRow
     let y = area2.height + ty;
     let endRow = startRow4;
-    while (y < render._height && endRow < _rows) {
+    while (y < _height && endRow < _rows) {
       y += getRowHeight(endRow);
       endRow += 1;
     }
@@ -61,7 +61,7 @@ export default class Viewport {
     // endCol
     let x = area2.width + tx;
     let endCol = startCol4;
-    while (x < render._width && endCol < _cols) {
+    while (x < _width && endCol < _cols) {
       x += getColWidth(endCol);
       endCol += 1;
     }
@@ -69,13 +69,19 @@ export default class Viewport {
     // area4
     const x4 = tx + area2.width;
     const y4 = ty + area2.height;
-    const w4 = _width - x4;
-    const h4 = _height - y4;
+    let w4 = _width - x4;
+    let h4 = _height - y4;
+    if (endCol === _cols) w4 -= _width - x;
+    if (endRow === _rows) h4 -= _height - y;
+
+    endCol -= 1;
+    endRow -= 1;
+
     const area4 = Area.create(
       startRow4,
       startCol4,
-      endRow - 1,
-      endCol - 1,
+      endRow,
+      endCol,
       x4,
       y4,
       w4,
@@ -88,8 +94,8 @@ export default class Viewport {
     const area1 = Area.create(
       _startRow,
       startCol4,
-      frows - 1,
-      endCol - 1,
+      frow - 1,
+      endCol,
       x4,
       ty,
       w4,
@@ -102,8 +108,8 @@ export default class Viewport {
     const area3 = Area.create(
       startRow4,
       _startCol,
-      endRow - 1,
-      fcols - 1,
+      endRow,
+      fcol - 1,
       tx,
       y4,
       0,

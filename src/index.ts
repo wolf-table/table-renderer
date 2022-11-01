@@ -275,7 +275,7 @@ export default class TableRenderer {
     fontFamily: 'Source Sans Pro',
   };
 
-  // freezed [cols, rows]
+  // freezed [row, col]
   _freeze: [number, number] = [0, 0];
 
   _freezeGridline: Gridline = {
@@ -433,7 +433,7 @@ export default class TableRenderer {
   }
 
   freeze(ref?: string) {
-    if (ref) this._freeze = expr2xy(ref);
+    if (ref) this._freeze = expr2xy(ref).reverse() as [number, number];
     return this;
   }
 

@@ -230,11 +230,11 @@ export function render(renderer: TableRenderer) {
     renderArea('row-header', canvas, headerArea23, renderer);
 
     // render freeze
-    const [cols, rows] = _freeze;
-    if (cols > 0 || rows > 0) {
+    const [row, col] = _freeze;
+    if (col > 0 || row > 0) {
       renderLines(canvas, renderer._freezeGridline, () => {
-        if (cols > 0) canvas.line(0, area4.y, _width, area4.y);
-        if (rows > 0) canvas.line(area4.x, 0, area4.x, _height);
+        if (col > 0) canvas.line(0, area4.y, _width, area4.y);
+        if (row > 0) canvas.line(area4.x, 0, area4.x, _height);
       });
     }
 
