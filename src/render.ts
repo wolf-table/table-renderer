@@ -18,7 +18,11 @@ import TableRenderer, {
   Gridline,
 } from '.';
 
-function renderLines(canvas: Canvas, { width, color }: Gridline, cb: () => void) {
+function renderLines(
+  canvas: Canvas,
+  { width, color }: Gridline,
+  cb: () => void
+) {
   if (width > 0) {
     canvas
       .save()
@@ -29,9 +33,16 @@ function renderLines(canvas: Canvas, { width, color }: Gridline, cb: () => void)
   }
 }
 
-function renderCellGridline(canvas: Canvas, gridline: Gridline, { x, y, width, height }: Rect) {
+function renderCellGridline(
+  canvas: Canvas,
+  gridline: Gridline,
+  { x, y, width, height }: Rect
+) {
   renderLines(canvas, gridline, () => {
-    canvas.translate(x, y).line(width, 0, width, height).line(0, height, width, height);
+    canvas
+      .translate(x, y)
+      .line(width, 0, width, height)
+      .line(0, height, width, height);
   });
 }
 
@@ -56,16 +67,31 @@ function renderBorder(
   } else if (type === 'right') {
     cellBorderRender(canvas, borderRect, { right: borderLineStyle }, autoAlign);
   } else if (type === 'bottom') {
-    cellBorderRender(canvas, borderRect, { bottom: borderLineStyle }, autoAlign);
+    cellBorderRender(
+      canvas,
+      borderRect,
+      { bottom: borderLineStyle },
+      autoAlign
+    );
   }
-  if (type === 'all' || type === 'inside' || type === 'horizontal' || type === 'vertical') {
+  if (
+    type === 'all' ||
+    type === 'inside' ||
+    type === 'horizontal' ||
+    type === 'vertical'
+  ) {
     if (type !== 'horizontal') {
       range.eachCol((index) => {
         if (index < range.endCol) {
           const r1 = range.clone();
           r1.endCol = r1.startCol = index;
           if (r1.intersects(area.range)) {
-            cellBorderRender(canvas, area.rect(r1), { right: borderLineStyle }, autoAlign);
+            cellBorderRender(
+              canvas,
+              area.rect(r1),
+              { right: borderLineStyle },
+              autoAlign
+            );
           }
         }
       });
@@ -76,7 +102,12 @@ function renderBorder(
           const r1 = range.clone();
           r1.endRow = r1.startRow = index;
           if (r1.intersects(area.range)) {
-            cellBorderRender(canvas, area.rect(r1), { bottom: borderLineStyle }, autoAlign);
+            cellBorderRender(
+              canvas,
+              area.rect(r1),
+              { bottom: borderLineStyle },
+              autoAlign
+            );
           }
         }
       });
@@ -84,7 +115,12 @@ function renderBorder(
   }
 }
 
-function renderBorders(canvas: Canvas, area: Area, borders: Border[] | undefined, areaMerges: Range[]) {
+function renderBorders(
+  canvas: Canvas,
+  area: Area,
+  borders: Border[] | undefined,
+  areaMerges: Range[]
+) {
   // render borders
   if (borders && borders.length > 0) {
     borders.forEach((border) => {
@@ -205,13 +241,23 @@ function renderArea(
 }
 
 export function render(renderer: TableRenderer) {
-  const { _width, _height, _target, _scale, _viewport, _freeze, _rowHeader, _colHeader } = renderer;
+  const {
+    _width,
+    _height,
+    _target,
+    _scale,
+    _viewport,
+    _freeze,
+    _rowHeader,
+    _colHeader,
+  } = renderer;
   if (_viewport) {
     const canvas = new Canvas(_target, _scale);
     canvas.size(_width, _height);
 
     const [area1, area2, area3, area4] = _viewport.areas;
-    const [headerArea1, headerArea21, headerArea23, headerArea3] = _viewport.headerAreas;
+    const [headerArea1, headerArea21, headerArea23, headerArea3] =
+      _viewport.headerAreas;
 
     // render-4
     renderArea('body', canvas, area4, renderer);
@@ -244,7 +290,13 @@ export function render(renderer: TableRenderer) {
       const { height } = _colHeader;
       const { width } = _rowHeader;
       const { bgcolor } = renderer._headerStyle;
-      if (bgcolor) canvas.save().prop({ fillStyle: bgcolor }).rect(0, 0, width, height).fill().restore();
+      if (bgcolor)
+        canvas
+          .save()
+          .prop({ fillStyle: bgcolor })
+          .rect(0, 0, width, height)
+          .fill()
+          .restore();
       renderLines(canvas, renderer._headerGridline, () => {
         canvas.line(0, height, width, height).line(width, 0, width, height);
       });

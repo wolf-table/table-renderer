@@ -50,12 +50,21 @@ describe('borderRanges', () => {
         it(`and border is [''${ref}'', '${type}', 'thick', '#188038']`, () => {
           const border: Border = [ref, type, 'thick', '#188038'];
           let ret = borderRanges(area, border, areaMerges);
-          if (type === 'inside' || type === 'horizontal' || type === 'vertical') {
+          if (
+            type === 'inside' ||
+            type === 'horizontal' ||
+            type === 'vertical'
+          ) {
             assert.equal(ret.length, 0);
           } else {
             assert.equal(ret[0][0].toString(), 'I10:J11');
             assert.equal(ret[0][2], type === 'all' ? 'outside' : type);
-            assert.deepEqual(ret[0][1], { x: 7 * 100, y: 9 * 25, width: 200, height: 50 });
+            assert.deepEqual(ret[0][1], {
+              x: 7 * 100,
+              y: 9 * 25,
+              width: 200,
+              height: 50,
+            });
           }
         });
       });
@@ -74,44 +83,104 @@ describe('borderRanges', () => {
             assert.equal(true, refs.includes(ret[i][0].toString()));
             assert.equal(ret[i][2], type);
           }
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 6 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[1][1], { x: 5 * 100, y: 11 * 25, width: 6 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[2][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[3][1], { x: 9 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[1][1], {
+            x: 5 * 100,
+            y: 11 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[2][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[3][1], {
+            x: 9 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
         } else if (type === 'inside') {
           assert.equal(ret.length, 8);
 
           assert.equal(ret[0][2], 'inside');
           assert.equal('G8:L9', ret[0][0].toString());
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 6 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[1][2], 'bottom');
           assert.equal('G8:L9', ret[0][0].toString());
-          assert.deepEqual(ret[1][1], { x: 5 * 100, y: 7 * 25, width: 6 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[1][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[2][2], 'inside');
           assert.equal('G12:L13', ret[2][0].toString());
-          assert.deepEqual(ret[2][1], { x: 5 * 100, y: 11 * 25, width: 6 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[2][1], {
+            x: 5 * 100,
+            y: 11 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[3][2], 'top');
           assert.equal('G12:L13', ret[2][0].toString());
-          assert.deepEqual(ret[3][1], { x: 5 * 100, y: 11 * 25, width: 6 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[3][1], {
+            x: 5 * 100,
+            y: 11 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[4][2], 'inside');
           assert.equal('G10:H11', ret[4][0].toString());
-          assert.deepEqual(ret[4][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[4][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[5][2], 'right');
           assert.equal('G10:H11', ret[5][0].toString());
-          assert.deepEqual(ret[5][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[5][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[6][2], 'inside');
           assert.equal('K10:L11', ret[6][0].toString());
-          assert.deepEqual(ret[6][1], { x: 9 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[6][1], {
+            x: 9 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[7][2], 'left');
           assert.equal('K10:L11', ret[7][0].toString());
-          assert.deepEqual(ret[7][1], { x: 9 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[7][1], {
+            x: 9 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
         } else if (type === 'horizontal') {
           assert.equal(ret.length, 6);
         } else if (type === 'vertical') {
@@ -120,7 +189,12 @@ describe('borderRanges', () => {
           assert.equal(ret.length, 1);
           assert.equal(ret[0][0].toString(), ref);
           assert.equal(ret[0][2], type);
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 6 * 100, height: 6 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 6 * 100,
+            height: 6 * 25,
+          });
         }
       });
     });
@@ -138,36 +212,86 @@ describe('borderRanges', () => {
             assert.equal(true, refs.includes(ret[i][0].toString()));
             assert.equal(ret[i][2], i === 3 ? 'bottom' : type);
           }
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 6 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[1][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[2][1], { x: 9 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[3][1], { x: 7 * 100, y: 9 * 25, width: 200, height: 50 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[1][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[2][1], {
+            x: 9 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[3][1], {
+            x: 7 * 100,
+            y: 9 * 25,
+            width: 200,
+            height: 50,
+          });
         } else if (type === 'inside') {
           assert.equal(ret.length, 6);
 
           assert.equal(ret[0][2], 'inside');
           assert.equal('G8:L9', ret[0][0].toString());
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 6 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[1][2], 'bottom');
           assert.equal('G8:L9', ret[0][0].toString());
-          assert.deepEqual(ret[1][1], { x: 5 * 100, y: 7 * 25, width: 6 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[1][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 6 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[2][2], 'inside');
           assert.equal('G10:H11', ret[2][0].toString());
-          assert.deepEqual(ret[2][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[2][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[3][2], 'right');
           assert.equal('G10:H11', ret[3][0].toString());
-          assert.deepEqual(ret[3][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[3][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[4][2], 'inside');
           assert.equal('K10:L11', ret[4][0].toString());
-          assert.deepEqual(ret[4][1], { x: 9 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[4][1], {
+            x: 9 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[5][2], 'left');
           assert.equal('K10:L11', ret[5][0].toString());
-          assert.deepEqual(ret[5][1], { x: 9 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[5][1], {
+            x: 9 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
         } else if (type === 'horizontal') {
           assert.equal(ret.length, 4);
         } else if (type === 'vertical') {
@@ -176,7 +300,12 @@ describe('borderRanges', () => {
           assert.equal(ret.length, 1);
           assert.equal(ret[0][0].toString(), ref);
           assert.equal(ret[0][2], type);
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 6 * 100, height: 4 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 6 * 100,
+            height: 4 * 25,
+          });
         }
       });
     });
@@ -198,28 +327,68 @@ describe('borderRanges', () => {
           assert.equal(true, ['right', 'bottom'].includes(ret[2][2]));
           assert.equal(true, ['right', 'bottom'].includes(ret[3][2]));
 
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 4 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[1][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[2][1], { x: 7 * 100, y: 9 * 25, width: 200, height: 50 });
-          assert.deepEqual(ret[3][1], { x: 7 * 100, y: 9 * 25, width: 200, height: 50 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 4 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[1][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[2][1], {
+            x: 7 * 100,
+            y: 9 * 25,
+            width: 200,
+            height: 50,
+          });
+          assert.deepEqual(ret[3][1], {
+            x: 7 * 100,
+            y: 9 * 25,
+            width: 200,
+            height: 50,
+          });
         } else if (type === 'inside') {
           assert.equal(ret.length, 4);
 
           assert.equal(ret[0][2], 'inside');
           assert.equal('G8:J9', ret[0][0].toString());
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 4 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 4 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[1][2], 'bottom');
           assert.equal('G8:J9', ret[1][0].toString());
-          assert.deepEqual(ret[1][1], { x: 5 * 100, y: 7 * 25, width: 4 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[1][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 4 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[2][2], 'inside');
           assert.equal('G10:H11', ret[2][0].toString());
-          assert.deepEqual(ret[2][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[2][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[3][2], 'right');
           assert.equal('G10:H11', ret[3][0].toString());
-          assert.deepEqual(ret[3][1], { x: 5 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[3][1], {
+            x: 5 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
         } else if (type === 'horizontal') {
           assert.equal(ret.length, 3);
         } else if (type === 'vertical') {
@@ -228,7 +397,12 @@ describe('borderRanges', () => {
           assert.equal(ret.length, 1);
           assert.equal(ret[0][0].toString(), ref);
           assert.equal(ret[0][2], type);
-          assert.deepEqual(ret[0][1], { x: 5 * 100, y: 7 * 25, width: 4 * 100, height: 4 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 5 * 100,
+            y: 7 * 25,
+            width: 4 * 100,
+            height: 4 * 25,
+          });
         }
       });
     });
@@ -250,20 +424,50 @@ describe('borderRanges', () => {
           assert.equal(ret[2][2], 'left');
           assert.equal(ret[3][2], 'right');
 
-          assert.deepEqual(ret[0][1], { x: 7 * 100, y: 7 * 25, width: 2 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[1][1], { x: 7 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[2][1], { x: 7 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
-          assert.deepEqual(ret[3][1], { x: 7 * 100, y: 9 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 7 * 100,
+            y: 7 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[1][1], {
+            x: 7 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[2][1], {
+            x: 7 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
+          assert.deepEqual(ret[3][1], {
+            x: 7 * 100,
+            y: 9 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
         } else if (type === 'inside') {
           assert.equal(ret.length, 2);
 
           assert.equal(ret[0][2], 'inside');
           assert.equal('I8:J9', ret[0][0].toString());
-          assert.deepEqual(ret[0][1], { x: 7 * 100, y: 7 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 7 * 100,
+            y: 7 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
 
           assert.equal(ret[1][2], 'bottom');
           assert.equal('I8:J9', ret[1][0].toString());
-          assert.deepEqual(ret[1][1], { x: 7 * 100, y: 7 * 25, width: 2 * 100, height: 2 * 25 });
+          assert.deepEqual(ret[1][1], {
+            x: 7 * 100,
+            y: 7 * 25,
+            width: 2 * 100,
+            height: 2 * 25,
+          });
         } else if (type === 'horizontal') {
           assert.equal(ret.length, 2);
         } else if (type === 'vertical') {
@@ -272,7 +476,12 @@ describe('borderRanges', () => {
           assert.equal(ret.length, 1);
           assert.equal(ret[0][0].toString(), ref);
           assert.equal(ret[0][2], type);
-          assert.deepEqual(ret[0][1], { x: 7 * 100, y: 7 * 25, width: 2 * 100, height: 4 * 25 });
+          assert.deepEqual(ret[0][1], {
+            x: 7 * 100,
+            y: 7 * 25,
+            width: 2 * 100,
+            height: 4 * 25,
+          });
         }
       });
     });

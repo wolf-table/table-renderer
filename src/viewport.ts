@@ -48,7 +48,10 @@ export default class Viewport {
       getColWidth
     );
 
-    const [startRow4, startCol4] = [frow + render._scrollRows, fcol + render._scrollCols];
+    const [startRow4, startCol4] = [
+      frow + render._scrollRows,
+      fcol + render._scrollCols,
+    ];
 
     // endRow
     let y = area2.height + ty;
@@ -191,12 +194,26 @@ export default class Viewport {
     const a2 = this.areas[1];
     const [ha1, ha21, ha23, ha3] = this.headerAreas;
     if (x < a2.x && y < a2.y)
-      return { placement: 'all', row: 0, col: 0, x: 0, y: 0, width: a2.x, height: a2.y };
+      return {
+        placement: 'all',
+        row: 0,
+        col: 0,
+        x: 0,
+        y: 0,
+        width: a2.x,
+        height: a2.y,
+      };
     if (x < a2.x) {
-      return { placement: 'row-header', ...(ha23.containsy(y) ? ha23 : ha3).cellAt(x, y) };
+      return {
+        placement: 'row-header',
+        ...(ha23.containsy(y) ? ha23 : ha3).cellAt(x, y),
+      };
     }
     if (y < a2.y) {
-      return { placement: 'col-header', ...(ha21.containsx(x) ? ha21 : ha1).cellAt(x, y) };
+      return {
+        placement: 'col-header',
+        ...(ha21.containsx(x) ? ha21 : ha1).cellAt(x, y),
+      };
     }
     for (let a of this.areas) {
       if (a.contains(x, y)) {

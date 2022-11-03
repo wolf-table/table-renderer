@@ -1,7 +1,11 @@
 import { Border, Area, Rect, BorderType } from '.';
 import Range from './range';
 
-export function borderRanges(area: Area, [ref, type, ...borderOther]: Border, areaMerges: Range[]) {
+export function borderRanges(
+  area: Area,
+  [ref, type, ...borderOther]: Border,
+  areaMerges: Range[]
+) {
   // render borders
   const ret: [Range, Rect, BorderType][] = [];
   const bRange = Range.with(ref);
@@ -19,7 +23,11 @@ export function borderRanges(area: Area, [ref, type, ...borderOther]: Border, ar
             type !== 'horizontal' &&
             type !== 'vertical'
           ) {
-            ret.push([merge, area.rect(merge), type === 'all' ? 'outside' : type]);
+            ret.push([
+              merge,
+              area.rect(merge),
+              type === 'all' ? 'outside' : type,
+            ]);
           }
         } else if (
           type === 'outside' ||
@@ -35,22 +43,40 @@ export function borderRanges(area: Area, [ref, type, ...borderOther]: Border, ar
           bRange.difference(merge).forEach((it) => {
             if (it.intersects(area.range)) {
               const borderRect = area.rect(it);
-              ret.push(...borderRanges(area, [it.toString(), type, ...borderOther], imerges));
+              ret.push(
+                ...borderRanges(
+                  area,
+                  [it.toString(), type, ...borderOther],
+                  imerges
+                )
+              );
               if (type === 'inside' || type === 'horizontal') {
-                if (it.startRow < merge.startRow && it.endRow < merge.startRow) {
+                if (
+                  it.startRow < merge.startRow &&
+                  it.endRow < merge.startRow
+                ) {
                   // top
                   ret.push([it, borderRect, 'bottom']);
-                } else if (it.startRow > merge.startRow && it.endRow > merge.startRow) {
+                } else if (
+                  it.startRow > merge.startRow &&
+                  it.endRow > merge.startRow
+                ) {
                   // bottom
                   ret.push([it, borderRect, 'top']);
                 }
               }
               if (type === 'inside' || type === 'vertical') {
-                if (it.startCol < merge.startCol && it.endCol < merge.startCol) {
+                if (
+                  it.startCol < merge.startCol &&
+                  it.endCol < merge.startCol
+                ) {
                   // left
                   ret.push([it, borderRect, 'right']);
                 }
-                if (it.startCol > merge.startCol && it.endCol > merge.startCol) {
+                if (
+                  it.startCol > merge.startCol &&
+                  it.endCol > merge.startCol
+                ) {
                   // right
                   ret.push([it, borderRect, 'left']);
                 }

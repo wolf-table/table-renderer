@@ -177,6 +177,14 @@ export default class Area {
     rowHeight: (index: number) => number,
     colWidth: (index: number) => number
   ) {
-    return new Area(new Range(startRow, startCol, endRow, endCol), x, y, width, height, rowHeight, colWidth);
+    return new Area(
+      new Range(startRow, startCol, endRow, endCol),
+      x,
+      y,
+      width,
+      height,
+      rowHeight,
+      colWidth
+    );
   }
 }

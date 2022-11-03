@@ -125,7 +125,12 @@ export type ViewportCell = {
   placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
 
-export type CellRenderer = (canvas: Canvas, rect: Rect, cell: Cell, text: string) => boolean;
+export type CellRenderer = (
+  canvas: Canvas,
+  rect: Rect,
+  cell: Cell,
+  text: string
+) => boolean;
 
 /**
  * ----------------------------------------------------------------
@@ -286,10 +291,16 @@ export default class TableRenderer {
   // it can be used after rendering
   _viewport: Viewport | null = null;
 
-  constructor(container: string | HTMLCanvasElement, width: number, height: number) {
+  constructor(
+    container: string | HTMLCanvasElement,
+    width: number,
+    height: number
+  ) {
     // const target = document.createElement('canvas');
     const target: HTMLCanvasElement | null =
-      typeof container === 'string' ? document.querySelector(container) : container;
+      typeof container === 'string'
+        ? document.querySelector(container)
+        : container;
     if (!target) throw new Error('target error');
     this._target = target;
     this._width = width;
@@ -466,12 +477,26 @@ export default class TableRenderer {
   }
   // get methods ---- end -------
 
-  static create(container: string | HTMLCanvasElement, width: number, height: number) {
+  static create(
+    container: string | HTMLCanvasElement,
+    width: number,
+    height: number
+  ) {
     return new TableRenderer(container, width, height);
   }
 }
 
-export { expr2xy, xy2expr, stringAt, Canvas, Range, Viewport, Area, eachRanges, findRanges };
+export {
+  expr2xy,
+  xy2expr,
+  stringAt,
+  Canvas,
+  Range,
+  Viewport,
+  Area,
+  eachRanges,
+  findRanges,
+};
 
 declare global {
   interface Window {

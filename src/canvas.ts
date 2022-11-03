@@ -9,7 +9,13 @@ type LineProperties = {
 type TextProperties = {
   font: string;
   textAlign: 'start' | 'end' | 'left' | 'right' | 'center';
-  textBaseline: 'top' | 'hanging' | 'middle' | 'alphabetic' | 'ideographic' | 'bottom';
+  textBaseline:
+    | 'top'
+    | 'hanging'
+    | 'middle'
+    | 'alphabetic'
+    | 'ideographic'
+    | 'bottom';
   direction: 'ltr' | 'rtl' | 'inherit';
 };
 
@@ -141,7 +147,14 @@ export default class Canvas {
     return this._ctx.createLinearGradient(x0, y0, x, y);
   }
 
-  createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number) {
+  createRadialGradient(
+    x0: number,
+    y0: number,
+    r0: number,
+    x1: number,
+    y1: number,
+    r1: number
+  ) {
     return this._ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
   }
 
@@ -170,7 +183,14 @@ export default class Canvas {
     return this;
   }
 
-  bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number) {
+  bezierCurveTo(
+    cp1x: number,
+    cp1y: number,
+    cp2x: number,
+    cp2y: number,
+    x: number,
+    y: number
+  ) {
     this._ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
     return this;
   }
@@ -207,7 +227,16 @@ export default class Canvas {
     endAngle: number,
     counterclockwise?: boolean
   ) {
-    this._ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise);
+    this._ctx.ellipse(
+      x,
+      y,
+      radiusX,
+      radiusY,
+      rotation,
+      startAngle,
+      endAngle,
+      counterclockwise
+    );
     return this;
   }
 
@@ -216,7 +245,13 @@ export default class Canvas {
     return this;
   }
 
-  roundRect(x: number, y: number, width: number, height: number, radius: number) {
+  roundRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number
+  ) {
     this.beginPath()
       .moveTo(x + radius, y)
       .arcTo(x + width, y, x + width, y + height, radius)
@@ -271,7 +306,14 @@ export default class Canvas {
     return this;
   }
 
-  setTransform(a: number, b: number, c: number, d: number, e: number, f: number) {
+  setTransform(
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+    e: number,
+    f: number
+  ) {
     this._ctx.setTransform(a, b, c, d, e, f);
     return this;
   }

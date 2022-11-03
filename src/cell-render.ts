@@ -32,7 +32,13 @@ function textx(align: Align, width: number, padding: number) {
 // height: the height of cell
 // txtHeight: the height of text
 // padding: the padding of cell
-function texty(align: VerticalAlign, height: number, txtHeight: number, fontHeight: number, padding: number) {
+function texty(
+  align: VerticalAlign,
+  height: number,
+  txtHeight: number,
+  fontHeight: number,
+  padding: number
+) {
   switch (align) {
     case 'top':
       return padding;
@@ -84,7 +90,12 @@ function textLine(
   return [x - tx, y - ty, x - tx + w, y - ty];
 }
 
-function fontString(family: string, size: number, italic: boolean, bold: boolean) {
+function fontString(
+  family: string,
+  size: number,
+  italic: boolean,
+  bold: boolean
+) {
   if (family && size) {
     let font = '';
     if (italic) font += 'italic ';
@@ -108,7 +119,10 @@ export function cellBorderRender(
   }
 
   canvas.save().beginPath().translate(rect.x, rect.y);
-  const lineRects = (index: number, offset: number): [number, number, number, number] => {
+  const lineRects = (
+    index: number,
+    offset: number
+  ): [number, number, number, number] => {
     const array: [number, number, number, number][] = [
       [0 - offset, 0, rect.width + offset, 0],
       [rect.width, 0, rect.width, rect.height],
@@ -247,7 +261,9 @@ export function cellRender(
       const txtWidth = canvas.measureTextWidth(it);
       canvas.fillText(it, tx, ty);
       lineTypes.forEach((type) => {
-        canvas.line(...textLine(type, align, valign, tx, ty, txtWidth, fontSize));
+        canvas.line(
+          ...textLine(type, align, valign, tx, ty, txtWidth, fontSize)
+        );
       });
       ty += fontHeight;
     });

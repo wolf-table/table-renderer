@@ -100,7 +100,10 @@ export default class Range {
    * @returns {boolean}
    */
   intersects({ startRow, startCol, endRow, endCol }: Range): boolean {
-    return this.intersectsCol(startCol, endCol) && this.intersectsRow(startRow, endRow);
+    return (
+      this.intersectsCol(startCol, endCol) &&
+      this.intersectsRow(startRow, endRow)
+    );
   }
 
   /**
@@ -150,10 +153,12 @@ export default class Range {
     return (
       (other.startRow === this.startRow &&
         other.endRow === this.endRow &&
-        (other.endCol + 1 === this.startCol || this.endCol + 1 === other.startCol)) ||
+        (other.endCol + 1 === this.startCol ||
+          this.endCol + 1 === other.startCol)) ||
       (other.startCol === this.startCol &&
         other.endCol === this.endCol &&
-        (other.endRow + 1 === this.startRow || this.endRow + 1 === this.startCol))
+        (other.endRow + 1 === this.startRow ||
+          this.endRow + 1 === this.startCol))
     );
   }
 
