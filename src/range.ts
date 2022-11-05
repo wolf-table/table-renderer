@@ -64,12 +64,12 @@ export default class Range {
 
   /**
    * check whether or not the range contains a cell position(row, col)
-   * @param {int} rowIndex row-index
-   * @param {int} colIndex col-index
+   * @param {int} row row-index
+   * @param {int} col col-index
    * @returns {boolean}
    */
-  contains(rowIndex: number, colIndex: number): boolean {
-    return this.containsRow(rowIndex) && this.containsCol(colIndex);
+  contains(row: number, col: number): boolean {
+    return this.containsRow(row) && this.containsCol(col);
   }
 
   /**
@@ -84,6 +84,19 @@ export default class Range {
       this.endRow <= other.endRow &&
       this.endCol <= other.endCol
     );
+  }
+
+  position(other: Range): 'left' | 'right' | 'up' | 'down' | 'none' {
+    if (this.startRow <= other.startRow && this.endRow >= other.endRow) {
+      // left | right
+      if (other.startCol > this.endCol) return 'right';
+      else if (other.endCol > this.startCol) return 'left';
+    } else if (this.startCol <= other.startCol && this.endCol >= other.endCol) {
+      // up | down
+      if (other.startRow > this.endRow) return 'down';
+      else if (other.endRow > this.startRow) return 'up';
+    }
+    return 'none';
   }
 
   intersectsRow(startRow: number, endRow: number): boolean {

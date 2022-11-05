@@ -1,4 +1,4 @@
-import { stringAt, expr2xy, xy2expr } from './alphabet';
+import { stringAt, expr2xy, xy2expr, expr2expr } from './alphabet';
 import Canvas from './canvas';
 import Range, { eachRanges, findRanges } from './range';
 import Viewport from './viewport';
@@ -41,6 +41,7 @@ export declare type Cell = {
     type?: string;
     style?: number;
     format?: string;
+    formula?: string;
     [property: string]: any;
 } | string | number | null | undefined;
 export declare type CellGetter = (rowIndex: number, colIndex: number) => Cell;
@@ -192,7 +193,7 @@ export default class TableRenderer {
     get viewport(): Viewport | null;
     static create(container: string | HTMLCanvasElement, width: number, height: number): TableRenderer;
 }
-export { expr2xy, xy2expr, stringAt, Canvas, Range, Viewport, Area, eachRanges, findRanges };
+export { expr2xy, xy2expr, expr2expr, stringAt, Canvas, Range, Viewport, Area, eachRanges, findRanges, };
 declare global {
     interface Window {
         wolf: any;

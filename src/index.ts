@@ -1,4 +1,4 @@
-import { stringAt, expr2xy, xy2expr } from './alphabet';
+import { stringAt, expr2xy, xy2expr, expr2expr } from './alphabet';
 import Canvas from './canvas';
 import Range, { eachRanges, findRanges } from './range';
 import { render } from './render';
@@ -63,6 +63,7 @@ export type Cell =
       type?: string;
       style?: number;
       format?: string;
+      formula?: string;
       [property: string]: any;
     }
   | string
@@ -489,6 +490,7 @@ export default class TableRenderer {
 export {
   expr2xy,
   xy2expr,
+  expr2expr,
   stringAt,
   Canvas,
   Range,
