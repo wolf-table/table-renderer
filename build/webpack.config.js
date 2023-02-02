@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    'table-render': './src/index.ts',
+    'table-renderer': './src/index.ts',
   },
   module: {
     rules: [

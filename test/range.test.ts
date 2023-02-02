@@ -173,16 +173,28 @@ describe('Range', () => {
   describe('#union() with new Range(4, 4, 8, 8)', () => {
     const range = new Range(4, 4, 8, 8);
     it('should return range(1, 1, 8, 8) when value is new Range(1, 1, 2, 2)', () => {
-      assert.deepEqual(range.union(new Range(1, 1, 2, 2)), new Range(1, 1, 8, 8));
+      assert.deepEqual(
+        range.union(new Range(1, 1, 2, 2)),
+        new Range(1, 1, 8, 8)
+      );
     });
     it('should return range(1, 1, 8, 8) when value is new Range(10, 10, 12, 12)', () => {
-      assert.deepEqual(range.union(new Range(10, 10, 12, 12)), new Range(4, 4, 12, 12));
+      assert.deepEqual(
+        range.union(new Range(10, 10, 12, 12)),
+        new Range(4, 4, 12, 12)
+      );
     });
     it('should return range(1, 1, 10, 8) when value is new Range(1, 1, 10, 2)', () => {
-      assert.deepEqual(range.union(new Range(1, 1, 10, 2)), new Range(1, 1, 10, 8));
+      assert.deepEqual(
+        range.union(new Range(1, 1, 10, 2)),
+        new Range(1, 1, 10, 8)
+      );
     });
     it('should return range(4, 4, 4, 8) when value is new Range(5, 5, 7, 7)', () => {
-      assert.deepEqual(range.union(new Range(5, 5, 7, 7)), new Range(4, 4, 8, 8));
+      assert.deepEqual(
+        range.union(new Range(5, 5, 7, 7)),
+        new Range(4, 4, 8, 8)
+      );
     });
   });
   describe('#clone() with new Range(4, 4, 8, 8)', () => {

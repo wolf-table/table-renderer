@@ -1,4 +1,4 @@
-type LineStyleAttrs = {
+type LineProperties = {
   lineWidth: number;
   lineCap: 'butt' | 'round' | 'square';
   lineJoin: 'round' | 'bevel' | 'miter';
@@ -6,39 +6,41 @@ type LineStyleAttrs = {
   lineDashOffset: number;
 };
 
-type TextStyleAttrs = {
+type TextProperties = {
   font: string;
   textAlign: 'start' | 'end' | 'left' | 'right' | 'center';
-  textBaseline: 'top' | 'hanging' | 'middle' | 'alphabetic' | 'ideographic' | 'bottom';
+  textBaseline:
+    | 'top'
+    | 'hanging'
+    | 'middle'
+    | 'alphabetic'
+    | 'ideographic'
+    | 'bottom';
   direction: 'ltr' | 'rtl' | 'inherit';
 };
 
-type FillStrokeStyleAttrs = {
+type FillStrokeProperties = {
   fillStyle: string;
   strokeStyle: string;
 };
 
-type ShadowAttrs = {
+type ShadowProperties = {
   shadowBlur: number;
   shadowColor: string;
   shadowOffsetX: number;
   shadowOffsetY: number;
 };
 
-type CompositingAttrs = {
+type CompositingProperties = {
   globalAlpha: number;
   globalCompositeOperation: string;
 };
 
-type Attrs = LineStyleAttrs & TextStyleAttrs & FillStrokeStyleAttrs & ShadowAttrs & CompositingAttrs;
-
-type BorderLineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
-
-export function borderLineTypeToWidth(lineType: BorderLineType) {
-  if (lineType === 'medium') return 2;
-  else if (lineType === 'thick') return 3;
-  return 1;
-}
+type Properties = LineProperties &
+  TextProperties &
+  FillStrokeProperties &
+  ShadowProperties &
+  CompositingProperties;
 
 export default class Canvas {
   _target: HTMLCanvasElement;
@@ -70,10 +72,10 @@ export default class Canvas {
   }
 
   // set this property value
-  attr(values: Partial<Attrs>): Canvas;
-  attr(key: keyof Attrs): any;
-  attr(key: keyof Attrs, value: any): Canvas;
-  attr(key: any, value?: any): any {
+  prop(values: Partial<Properties>): Canvas;
+  prop(key: keyof Properties): any;
+  prop(key: keyof Properties, value: any): Canvas;
+  prop(key: any, value?: any): any {
     if (value) {
       (this._ctx as any)[key] = value;
       return this;
@@ -94,19 +96,7 @@ export default class Canvas {
   }
 
   // draw line
-  line(x1: number, y1: number, x2: number, y2: number, style?: { type: BorderLineType; color: string }) {
-    if (style) {
-      this.beginPath().attr({ lineWidth: 1, strokeStyle: style.color });
-      if (style.type === 'medium') {
-        this.attr({ lineWidth: 2 });
-      } else if (style.type === 'thick') {
-        this.attr({ lineWidth: 3 });
-      } else if (style.type === 'dashed') {
-        this.setLineDash([3, 2]);
-      } else if (style.type === 'dotted') {
-        this.setLineDash([1, 1]);
-      }
-    }
+  line(x1: number, y1: number, x2: number, y2: number) {
     this.moveTo(x1, y1).lineTo(x2, y2).stroke();
     return this;
   }
@@ -157,7 +147,14 @@ export default class Canvas {
     return this._ctx.createLinearGradient(x0, y0, x, y);
   }
 
-  createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number) {
+  createRadialGradient(
+    x0: number,
+    y0: number,
+    r0: number,
+    x1: number,
+    y1: number,
+    r1: number
+  ) {
     return this._ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
   }
 
@@ -186,13 +183,20 @@ export default class Canvas {
     return this;
   }
 
-  bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number) {
-    this.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+  bezierCurveTo(
+    cp1x: number,
+    cp1y: number,
+    cp2x: number,
+    cp2y: number,
+    x: number,
+    y: number
+  ) {
+    this._ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
     return this;
   }
 
   quadraticCurveTo(cpx: number, cpy: number, x: number, y: number) {
-    this.quadraticCurveTo(cpx, cpy, x, y);
+    this._ctx.quadraticCurveTo(cpx, cpy, x, y);
     return this;
   }
 
@@ -223,7 +227,16 @@ export default class Canvas {
     endAngle: number,
     counterclockwise?: boolean
   ) {
-    this._ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise);
+    this._ctx.ellipse(
+      x,
+      y,
+      radiusX,
+      radiusY,
+      rotation,
+      startAngle,
+      endAngle,
+      counterclockwise
+    );
     return this;
   }
 
@@ -232,7 +245,13 @@ export default class Canvas {
     return this;
   }
 
-  roundRect(x: number, y: number, width: number, height: number, radius: number) {
+  roundRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number
+  ) {
     this.beginPath()
       .moveTo(x + radius, y)
       .arcTo(x + width, y, x + width, y + height, radius)
@@ -287,7 +306,14 @@ export default class Canvas {
     return this;
   }
 
-  setTransform(a: number, b: number, c: number, d: number, e: number, f: number) {
+  setTransform(
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+    e: number,
+    f: number
+  ) {
     this._ctx.setTransform(a, b, c, d, e, f);
     return this;
   }

@@ -28,41 +28,67 @@ export default class Viewport {
     this._render = render;
 
     const [tx, ty] = [render._rowHeader.width, render._colHeader.height];
-    const [fcols, frows] = render._freeze;
-    const { _startRow, _startCol, _rows, _cols } = render;
+    const [frow, fcol] = render._freeze;
+    const { _startRow, _startCol, _rows, _cols, _width, _height } = render;
 
     const getRowHeight = (index: number) => render.rowHeightAt(index);
     const getColWidth = (index: number) => render.colWidthAt(index);
 
     // area2
-    const area2 = Area.create(_startRow, _startCol, frows - 1, fcols - 1, tx, ty, getRowHeight, getColWidth);
+    const area2 = Area.create(
+      _startRow,
+      _startCol,
+      frow - 1,
+      fcol - 1,
+      tx,
+      ty,
+      0,
+      0,
+      getRowHeight,
+      getColWidth
+    );
 
-    const [startRow4, startCol4] = [frows + render._scrollRows, fcols + render._scrollCols];
+    const [startRow4, startCol4] = [
+      frow + render._scrollRows,
+      fcol + render._scrollCols,
+    ];
 
     // endRow
-    let y = area2.height;
+    let y = area2.height + ty;
     let endRow = startRow4;
-    while (y < render._height && endRow < _rows) {
+    while (y < _height && endRow < _rows) {
       y += getRowHeight(endRow);
       endRow += 1;
     }
 
     // endCol
-    let x = area2.width;
+    let x = area2.width + tx;
     let endCol = startCol4;
-    while (x < render._width && endCol < _cols) {
+    while (x < _width && endCol < _cols) {
       x += getColWidth(endCol);
       endCol += 1;
     }
 
     // area4
+    const x4 = tx + area2.width;
+    const y4 = ty + area2.height;
+    let w4 = _width - x4;
+    let h4 = _height - y4;
+    if (endCol === _cols) w4 -= _width - x;
+    if (endRow === _rows) h4 -= _height - y;
+
+    endCol -= 1;
+    endRow -= 1;
+
     const area4 = Area.create(
       startRow4,
       startCol4,
-      endRow - 1,
-      endCol - 1,
-      tx + area2.width,
-      ty + area2.height,
+      endRow,
+      endCol,
+      x4,
+      y4,
+      w4,
+      h4,
       getRowHeight,
       getColWidth
     );
@@ -71,10 +97,12 @@ export default class Viewport {
     const area1 = Area.create(
       _startRow,
       startCol4,
-      frows - 1,
-      endCol - 1,
-      tx + area2.width,
+      frow - 1,
+      endCol,
+      x4,
       ty,
+      w4,
+      0,
       getRowHeight,
       getColWidth
     );
@@ -83,10 +111,12 @@ export default class Viewport {
     const area3 = Area.create(
       startRow4,
       _startCol,
-      endRow - 1,
-      fcols - 1,
+      endRow,
+      fcol - 1,
       tx,
-      ty + area2.height,
+      y4,
+      0,
+      h4,
       getRowHeight,
       getColWidth
     );
@@ -107,6 +137,8 @@ export default class Viewport {
         area1.range.endCol,
         area4.x,
         0,
+        area4.width,
+        0,
         getColHeaderRow,
         getColWidth
       ),
@@ -116,6 +148,8 @@ export default class Viewport {
         _colHeader.rows - 1,
         area2.range.endCol,
         area2.x,
+        0,
+        area2.width,
         0,
         getColHeaderRow,
         getColWidth
@@ -127,6 +161,8 @@ export default class Viewport {
         _rowHeader.cols - 1,
         0,
         area2.y,
+        0,
+        area2.height,
         getRowHeight,
         getRowHeaderCol
       ),
@@ -137,6 +173,8 @@ export default class Viewport {
         _rowHeader.cols - 1,
         0,
         area4.y,
+        0,
+        area4.height,
         getRowHeight,
         getRowHeaderCol
       ),
@@ -156,12 +194,26 @@ export default class Viewport {
     const a2 = this.areas[1];
     const [ha1, ha21, ha23, ha3] = this.headerAreas;
     if (x < a2.x && y < a2.y)
-      return { placement: 'all', row: 0, col: 0, x: 0, y: 0, width: a2.x, height: a2.y };
+      return {
+        placement: 'all',
+        row: 0,
+        col: 0,
+        x: 0,
+        y: 0,
+        width: a2.x,
+        height: a2.y,
+      };
     if (x < a2.x) {
-      return { placement: 'row-header', ...(ha23.containsy(y) ? ha23 : ha3).cellAt(x, y) };
+      return {
+        placement: 'row-header',
+        ...(ha23.containsy(y) ? ha23 : ha3).cellAt(x, y),
+      };
     }
     if (y < a2.y) {
-      return { placement: 'col-header', ...(ha21.containsx(x) ? ha21 : ha1).cellAt(x, y) };
+      return {
+        placement: 'col-header',
+        ...(ha21.containsx(x) ? ha21 : ha1).cellAt(x, y),
+      };
     }
     for (let a of this.areas) {
       if (a.contains(x, y)) {

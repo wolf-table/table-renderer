@@ -35,17 +35,18 @@ export default class Range {
     containsCol(index: number): boolean;
     /**
      * check whether or not the range contains a cell position(row, col)
-     * @param {int} rowIndex row-index
-     * @param {int} colIndex col-index
+     * @param {int} row row-index
+     * @param {int} col col-index
      * @returns {boolean}
      */
-    contains(rowIndex: number, colIndex: number): boolean;
+    contains(row: number, col: number): boolean;
     /**
      * check whether or not the range within the other range
      * @param {Range} other
      * @returns {boolean}
      */
     within(other: Range): boolean;
+    position(other: Range): 'left' | 'right' | 'up' | 'down' | 'none';
     intersectsRow(startRow: number, endRow: number): boolean;
     intersectsCol(startCol: number, endCol: number): boolean;
     /**
@@ -67,6 +68,7 @@ export default class Range {
      */
     union(other: Range): Range;
     difference(other: Range): Range[];
+    touches(other: Range): boolean;
     /**
      * @param {Function} cb (row) => {}
      * @returns this

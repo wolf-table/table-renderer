@@ -1,4 +1,4 @@
-import { stringAt, expr2xy, xy2expr } from './alphabet';
+import { stringAt, expr2xy, xy2expr, expr2expr } from './alphabet';
 import Canvas from './canvas';
 import Range, { eachRanges, findRanges } from './range';
 import { render } from './render';
@@ -8,21 +8,15 @@ import Area from './area';
 export type Align = 'left' | 'right' | 'center';
 export type VerticalAlign = 'top' | 'bottom' | 'middle';
 
-export type LineStyle = {
+export type GridlineStyle = 'solid' | 'dashed' | 'dotted';
+
+export type Gridline = {
   width: number;
   color: string;
+  style?: GridlineStyle;
 };
-
-export type LineType = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
 
 export type TextLineType = 'underline' | 'strikethrough';
-
-export type CellStyleBorder = {
-  left?: [LineType, string];
-  top?: [LineType, string];
-  right?: [LineType, string];
-  bottom?: [LineType, string];
-};
 
 export type BorderType =
   | 'all'
@@ -34,31 +28,42 @@ export type BorderType =
   | 'top'
   | 'right'
   | 'bottom';
-// ref, type, line-type, line-color
-export type Border = [string, BorderType, LineType, string];
 
-export type CellStyle = {
-  bgcolor: string;
+export type BorderLineStyle = 'thin' | 'medium' | 'thick' | 'dashed' | 'dotted';
+
+export type BorderLine = {
+  left?: [BorderLineStyle, string];
+  top?: [BorderLineStyle, string];
+  right?: [BorderLineStyle, string];
+  bottom?: [BorderLineStyle, string];
+};
+
+// ref, type, style, color
+export type Border = [string, BorderType, BorderLineStyle, string];
+
+export type Style = {
+  bgcolor?: string;
+  color: string;
   align: Align;
   valign: VerticalAlign;
   textwrap: boolean;
   underline: boolean;
   strikethrough: boolean;
-  color: string;
   bold: boolean;
   italic: boolean;
   fontSize: number;
-  fontName: string;
+  fontFamily: string;
   rotate?: number;
   padding?: [number, number];
 };
 
 export type Cell =
   | {
-      value: string | number;
+      value?: string | number;
       type?: string;
       style?: number;
       format?: string;
+      formula?: string;
       [property: string]: any;
     }
   | string
@@ -66,7 +71,8 @@ export type Cell =
   | null
   | undefined;
 export type CellGetter = (rowIndex: number, colIndex: number) => Cell;
-export type CellFormatter = (value: string, format?: string) => string;
+
+export type Formatter = (value: string, format?: string) => string;
 
 export type Row = {
   height: number;
@@ -92,7 +98,7 @@ export type RowHeader = {
   width: number;
   cols: number;
   cell: CellGetter;
-  cellTypeRenderer?: CellTypeRenderer;
+  cellRenderer?: CellRenderer;
   merges?: string[];
 };
 
@@ -100,7 +106,7 @@ export type ColHeader = {
   height: number;
   rows: number;
   cell: CellGetter;
-  cellTypeRenderer?: CellTypeRenderer;
+  cellRenderer?: CellRenderer;
   merges?: string[];
 };
 
@@ -120,8 +126,12 @@ export type ViewportCell = {
   placement: 'all' | 'row-header' | 'col-header' | 'body';
 } & AreaCell;
 
-export type CellTypeRender = (canvas: Canvas, rect: Rect, cell: Cell) => boolean;
-export type CellTypeRenderer = (type?: string) => CellTypeRender | null | undefined;
+export type CellRenderer = (
+  canvas: Canvas,
+  rect: Rect,
+  cell: Cell,
+  text: string
+) => boolean;
 
 /**
  * ----------------------------------------------------------------
@@ -147,6 +157,8 @@ export type CellTypeRenderer = (type?: string) => CellTypeRender | null | undefi
 
 export default class TableRenderer {
   _target: HTMLCanvasElement;
+
+  _bgcolor = '#ffffff';
 
   // table width
   _width = 0;
@@ -202,23 +214,22 @@ export default class TableRenderer {
    */
   _cell: CellGetter = () => undefined;
 
-  _cellTypeRenderer: CellTypeRenderer = () => null;
+  _cellRenderer: CellRenderer = () => true;
 
-  _cellFormatter: CellFormatter = (v) => v;
+  _formatter: Formatter = (v) => v;
 
   _merges: string[] = [];
 
   _borders: Border[] = [];
 
-  _styles: Partial<CellStyle>[] = [];
+  _styles: Partial<Style>[] = [];
 
-  _lineStyle: LineStyle = {
+  _gridline: Gridline = {
     width: 1,
     color: '#e6e6e6',
   };
 
-  _cellStyle: CellStyle = {
-    bgcolor: '#ffffff',
+  _style: Style = {
     align: 'left',
     valign: 'middle',
     textwrap: false,
@@ -229,7 +240,7 @@ export default class TableRenderer {
     italic: false,
     rotate: 0,
     fontSize: 10,
-    fontName: 'Source Sans Pro',
+    fontFamily: 'Source Sans Pro',
   };
 
   // row header
@@ -250,13 +261,13 @@ export default class TableRenderer {
     },
   };
 
-  _headerLineStyle: LineStyle = {
+  _headerGridline: Gridline = {
     width: 1,
     color: '#e6e6e6',
   };
 
-  _headerCellStyle: CellStyle = {
-    bgcolor: '#f4f5f8',
+  _headerStyle: Style = {
+    bgcolor: '#f4f5f8cc',
     align: 'center',
     valign: 'middle',
     textwrap: true,
@@ -267,13 +278,13 @@ export default class TableRenderer {
     italic: false,
     rotate: 0,
     fontSize: 10,
-    fontName: 'Source Sans Pro',
+    fontFamily: 'Source Sans Pro',
   };
 
-  // freezed [cols, rows]
+  // freezed [row, col]
   _freeze: [number, number] = [0, 0];
 
-  _freezeLineStyle: LineStyle = {
+  _freezeGridline: Gridline = {
     width: 2,
     color: '#d8d8d8',
   };
@@ -281,10 +292,16 @@ export default class TableRenderer {
   // it can be used after rendering
   _viewport: Viewport | null = null;
 
-  constructor(container: string | HTMLCanvasElement, width: number, height: number) {
+  constructor(
+    container: string | HTMLCanvasElement,
+    width: number,
+    height: number
+  ) {
     // const target = document.createElement('canvas');
     const target: HTMLCanvasElement | null =
-      typeof container === 'string' ? document.querySelector(container) : container;
+      typeof container === 'string'
+        ? document.querySelector(container)
+        : container;
     if (!target) throw new Error('target error');
     this._target = target;
     this._width = width;
@@ -294,6 +311,11 @@ export default class TableRenderer {
   render() {
     this._viewport = new Viewport(this);
     render(this);
+    return this;
+  }
+
+  bgcolor(value: string) {
+    this._bgcolor = value;
     return this;
   }
 
@@ -367,38 +389,38 @@ export default class TableRenderer {
     return this;
   }
 
-  cellTypeRenderer(value: CellTypeRenderer) {
-    this._cellTypeRenderer = value;
+  cellRenderer(value: CellRenderer) {
+    this._cellRenderer = value;
     return this;
   }
 
-  cellFormatter(value: CellFormatter) {
-    this._cellFormatter = value;
+  formatter(value: Formatter) {
+    this._formatter = value;
     return this;
   }
 
-  merges(value?: string[]) {
-    if (value) this._merges = value;
+  merges(value: string[]) {
+    this._merges = value;
     return this;
   }
 
-  styles(value?: Partial<CellStyle>[]) {
-    if (value) this._styles = value;
+  styles(value: Partial<Style>[]) {
+    this._styles = value;
     return this;
   }
 
-  borders(value?: Border[]) {
-    if (value) this._borders = value;
+  borders(value: Border[]) {
+    this._borders = value;
     return this;
   }
 
-  lineStyle(value: Partial<LineStyle>) {
-    Object.assign(this._lineStyle, value);
+  gridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._gridline, value);
     return this;
   }
 
-  cellStyle(value: Partial<CellStyle>) {
-    Object.assign(this._cellStyle, value);
+  style(value?: Partial<Style>) {
+    if (value) Object.assign(this._style, value);
     return this;
   }
 
@@ -412,23 +434,23 @@ export default class TableRenderer {
     return this;
   }
 
-  headerLineStyle(value: Partial<LineStyle>) {
-    Object.assign(this._headerLineStyle, value);
+  headerGridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._headerGridline, value);
     return this;
   }
 
-  headerCellStyle(value?: Partial<CellStyle>) {
-    if (value) Object.assign(this._headerCellStyle, value);
+  headerStyle(value?: Partial<Style>) {
+    if (value) Object.assign(this._headerStyle, value);
     return this;
   }
 
   freeze(ref?: string) {
-    if (ref) this._freeze = expr2xy(ref);
+    if (ref) this._freeze = expr2xy(ref).reverse() as [number, number];
     return this;
   }
 
-  freezeLineStyle(value: Partial<LineStyle>) {
-    Object.assign(this._freezeLineStyle, value);
+  freezeGridline(value?: Partial<Gridline>) {
+    if (value) Object.assign(this._freezeGridline, value);
     return this;
   }
 
@@ -437,7 +459,7 @@ export default class TableRenderer {
     const { _row } = this;
     if (_row) {
       const r = _row(index);
-      if (r) return r.hide ? 0 : r.height;
+      if (r) return r.hide === true ? 0 : r.height;
     }
     return this._rowHeight;
   }
@@ -446,7 +468,7 @@ export default class TableRenderer {
     const { _col } = this;
     if (_col) {
       const c = _col(index);
-      if (c) return c.hide ? 0 : c.width;
+      if (c) return c.hide === true ? 0 : c.width;
     }
     return this._colWidth;
   }
@@ -456,12 +478,27 @@ export default class TableRenderer {
   }
   // get methods ---- end -------
 
-  static create(container: string | HTMLCanvasElement, width: number, height: number) {
+  static create(
+    container: string | HTMLCanvasElement,
+    width: number,
+    height: number
+  ) {
     return new TableRenderer(container, width, height);
   }
 }
 
-export { expr2xy, xy2expr, stringAt, Range, Viewport, Area, eachRanges, findRanges };
+export {
+  expr2xy,
+  xy2expr,
+  expr2expr,
+  stringAt,
+  Canvas,
+  Range,
+  Viewport,
+  Area,
+  eachRanges,
+  findRanges,
+};
 
 declare global {
   interface Window {

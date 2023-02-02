@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = merge(common, {
   entry: {
-    'table-render': './index-dev.ts',
+    'table-renderer': './index-dev.ts',
   },
   devtool: 'inline-source-map',
   mode: 'development',

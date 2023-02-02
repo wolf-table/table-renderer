@@ -1,16 +1,16 @@
 import {
   Align,
-  CellStyle,
+  Style,
   Rect,
   VerticalAlign,
   TextLineType,
-  CellStyleBorder,
-  LineType,
+  BorderLineStyle,
   Cell,
-  CellFormatter,
-  CellTypeRenderer,
+  Formatter,
+  CellRenderer,
+  BorderLine,
 } from '.';
-import Canvas, { borderLineTypeToWidth } from './canvas';
+import Canvas from './canvas';
 
 // align: left | center | right
 // width: the width of cell
@@ -32,7 +32,13 @@ function textx(align: Align, width: number, padding: number) {
 // height: the height of cell
 // txtHeight: the height of text
 // padding: the padding of cell
-function texty(align: VerticalAlign, height: number, txtHeight: number, fontHeight: number, padding: number) {
+function texty(
+  align: VerticalAlign,
+  height: number,
+  txtHeight: number,
+  fontHeight: number,
+  padding: number
+) {
   switch (align) {
     case 'top':
       return padding;
@@ -84,7 +90,12 @@ function textLine(
   return [x - tx, y - ty, x - tx + w, y - ty];
 }
 
-function fontString(family: string, size: number, italic: boolean, bold: boolean) {
+function fontString(
+  family: string,
+  size: number,
+  italic: boolean,
+  bold: boolean
+) {
   if (family && size) {
     let font = '';
     if (italic) font += 'italic ';
@@ -97,32 +108,53 @@ function fontString(family: string, size: number, italic: boolean, bold: boolean
 export function cellBorderRender(
   canvas: Canvas,
   rect: Rect,
-  border: CellStyleBorder | [LineType, string],
+  borderLine: BorderLine | [BorderLineStyle, string],
   autoAlign: boolean = false
 ) {
   let top, right, bottom, left;
-  if (Array.isArray(border)) {
-    top = right = bottom = left = border;
+  if (Array.isArray(borderLine)) {
+    top = right = bottom = left = borderLine;
   } else {
-    ({ top, right, bottom, left } = border);
+    ({ top, right, bottom, left } = borderLine);
   }
-  let offset = 0;
-  if (top && autoAlign) {
-    offset = borderLineTypeToWidth(top[0]) / 2;
-  }
-  canvas.save().translate(rect.x, rect.y);
-  if (top) canvas.line(0 - offset, 0, rect.width + offset, 0, { type: top[0], color: top[1] });
-  if (right)
-    canvas.line(rect.width, 0, rect.width, rect.height, {
-      type: right[0],
-      color: right[1],
-    });
-  if (bottom)
-    canvas.line(0 - offset, rect.height, rect.width + offset, rect.height, {
-      type: bottom[0],
-      color: bottom[1],
-    });
-  if (left) canvas.line(0, 0, 0, rect.height, { type: left[0], color: left[1] });
+
+  canvas.save().beginPath().translate(rect.x, rect.y);
+  const lineRects = (
+    index: number,
+    offset: number
+  ): [number, number, number, number] => {
+    const array: [number, number, number, number][] = [
+      [0 - offset, 0, rect.width + offset, 0],
+      [rect.width, 0, rect.width, rect.height],
+      [0 - offset, rect.height, rect.width + offset, rect.height],
+      [0, 0, 0, rect.height],
+    ];
+    return array[index];
+  };
+
+  [top, right, bottom, left].forEach((it, index) => {
+    if (it) {
+      let lineDash: number[] = [];
+      let lineWidth = 1;
+      if (it[0] === 'thick') {
+        lineWidth = 3;
+      } else if (it[0] === 'medium') {
+        lineWidth = 2;
+      } else if (it[0] === 'dotted') {
+        lineDash = [1, 1];
+      } else if (it[0] === 'dashed') {
+        lineDash = [2, 2];
+      }
+      let offset = 0;
+      if (autoAlign) {
+        offset = lineWidth / 2;
+      }
+      canvas
+        .prop({ strokeStyle: it[1], lineWidth })
+        .setLineDash(lineDash)
+        .line(...lineRects(index, offset));
+    }
+  });
   canvas.restore();
 }
 
@@ -132,24 +164,22 @@ export function cellRender(
   canvas: Canvas,
   cell: Cell,
   rect: Rect,
-  style: CellStyle,
-  cellTypeRenderer: CellTypeRenderer | undefined,
-  cellFormatter: CellFormatter
+  style: Style,
+  cellRenderer: CellRenderer | undefined,
+  formatter: Formatter
 ) {
   let text = '';
-  let type = undefined;
   if (cell) {
     if (typeof cell === 'string' || typeof cell === 'number') {
-      text = cellFormatter(`${cell}`);
+      text = formatter(`${cell}`);
     } else {
-      type = cell.type;
-      text = cellFormatter((cell.value || '') + '', cell.format);
+      text = formatter((cell.value || '') + '', cell.format);
     }
   }
 
   const {
     fontSize,
-    fontName,
+    fontFamily,
     bold,
     italic,
     color,
@@ -166,23 +196,21 @@ export function cellRender(
   canvas.save().beginPath().translate(rect.x, rect.y);
 
   // clip
-  canvas.attr('fillStyle', bgcolor).rect(0, 0, rect.width, rect.height).clip().fill();
+  canvas.rect(0, 0, rect.width, rect.height).clip();
+  if (bgcolor) canvas.prop('fillStyle', bgcolor).fill();
 
   // rotate
   if (rotate && rotate > 0) {
     canvas.rotate(rotate * (Math.PI / 180));
   }
 
-  if (cellTypeRenderer !== undefined) {
-    const typeRender = cellTypeRenderer(type);
-    if (typeRender) {
-      canvas.save();
-      if (!typeRender(canvas, rect, cell)) {
-        canvas.restore();
-        return;
-      }
+  if (cellRenderer !== undefined) {
+    canvas.save();
+    if (!cellRenderer(canvas, rect, cell, text)) {
       canvas.restore();
+      return;
     }
+    canvas.restore();
   }
 
   // text
@@ -191,10 +219,10 @@ export function cellRender(
     canvas
       .save()
       .beginPath()
-      .attr({
+      .prop({
         textAlign: align,
         textBaseline: valign,
-        font: fontString(fontName, fontSize, italic, bold),
+        font: fontString(fontFamily, fontSize, italic, bold),
         fillStyle: color,
       });
 
@@ -233,7 +261,9 @@ export function cellRender(
       const txtWidth = canvas.measureTextWidth(it);
       canvas.fillText(it, tx, ty);
       lineTypes.forEach((type) => {
-        canvas.line(...textLine(type, align, valign, tx, ty, txtWidth, fontSize));
+        canvas.line(
+          ...textLine(type, align, valign, tx, ty, txtWidth, fontSize)
+        );
       });
       ty += fontHeight;
     });
