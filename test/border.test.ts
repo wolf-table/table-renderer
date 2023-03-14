@@ -19,7 +19,7 @@ const borderTypes: BorderType[] = [
 describe('borderRanges', () => {
   const rowHeight = () => 25;
   const colWidth = (i) => (i === 5 ? 0 : 100);
-  const area = Area.create(0, 0, 19, 15, 260, 50, rowHeight, colWidth);
+  const area = Area.create(0, 0, 19, 15, 0, 0, 260, 50, rowHeight, colWidth);
   const areaMerges = [Range.with('I10:J11'), Range.with('B9:D10')];
 
   describe(`when area is [0, 0, 19, 20] and areaMerges is ['I10:J11', 'B9:D10'] `, () => {

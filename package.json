@@ -1,7 +1,7 @@
 {
-  "name": "table-renderer",
-  "version": "1.0.0",
-  "description": "a table renderer",
+  "name": "@wolf-table/table-renderer",
+  "version": "0.0.1",
+  "description": "a based-canvas table renderer",
   "main": "dist/table-renderer.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wolf-js/table-render.git"
+    "url": "git+https://github.com/wolf-table/table-render.git"
   },
   "keywords": [
     "web",
@@ -23,9 +23,9 @@
   "author": "myliang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wolf-js/table-render/issues"
+    "url": "https://github.com/wolf-table/table-render/issues"
   },
-  "homepage": "https://github.com/wolf-js/table-render#readme",
+  "homepage": "https://github.com/wolf-table/table-render#readme",
   "devDependencies": {
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",

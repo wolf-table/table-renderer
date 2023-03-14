@@ -90,11 +90,11 @@ export default class Range {
     if (this.startRow <= other.startRow && this.endRow >= other.endRow) {
       // left | right
       if (other.startCol > this.endCol) return 'right';
-      else if (other.endCol > this.startCol) return 'left';
+      else if (other.endCol < this.startCol) return 'left';
     } else if (this.startCol <= other.startCol && this.endCol >= other.endCol) {
       // up | down
       if (other.startRow > this.endRow) return 'down';
-      else if (other.endRow > this.startRow) return 'up';
+      else if (other.endRow < this.startRow) return 'up';
     }
     return 'none';
   }
