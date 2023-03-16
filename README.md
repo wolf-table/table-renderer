@@ -19,6 +19,8 @@
 ```shell
 npm install @wolf-table/table-renderer@0.0.1
 ```
+
+## Usage
 ```javascript
 import TableRenderer, { Cell, Canvas } from "@wolf-table/table-renderer";
 const longText = {
