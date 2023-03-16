@@ -4,15 +4,16 @@
   </a>
 </p>
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/wolf-table/table-render/npm-publish-github-packages.yml)
-[![npm package](https://img.shields.io/npm/v/@wolf-table/table-renderer.svg)](https://www.npmjs.org/package/@wolf-table/table-renderer)
-![GitHub all releases](https://img.shields.io/github/downloads/wolf-table/table-renderer/total)
-![GitHub](https://img.shields.io/github/license/wolf-table/table-renderer)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wolf-table/table-renderer)
-![Gitter](https://img.shields.io/gitter/room/wolf-table/table-renderer)
+<p align="center">
+  <img src="https://img.shields.io/github/actions/workflow/status/wolf-table/table-render/npm-publish-github-packages.yml" alt="GitHub Workflow Status">
+  <a href="https://www.npmjs.org/package/@wolf-table/table-renderer"><img src="https://img.shields.io/npm/v/@wolf-table/table-renderer.svg" alt="npm package"></a>
+  <img src="https://img.shields.io/github/downloads/wolf-table/table-renderer/total" alt="GitHub all releases">
+  <img src="https://img.shields.io/github/license/wolf-table/table-renderer" alt="GitHub">
+  <img src="https://img.shields.io/github/languages/code-size/wolf-table/table-renderer" alt="GitHub code size in bytes">
+</p>
 
 ## wolf-table-renderer
-> A web-based(canvas) JavaScript Table
+> A web-based(canvas) JavaScript Table Renderer
 
 ## NPM
 ```shell
