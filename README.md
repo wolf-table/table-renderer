@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/wolf-table/table-renderer">
-    <img src="https://raw.githubusercontent.com/wolf-table/table-renderer/main/logo.svg" height="100px" width="700px"/>
+    <img src="https://raw.githubusercontent.com/wolf-table/table-renderer/main/logo.svg" height="80px" width="600px"/>
   </a>
 </p>
 
