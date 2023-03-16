@@ -1,8 +1,8 @@
-<div align="center">
+<p align="center">
   <a href="https://github.com/wolf-table/table-renderer">
-    <img src="https://raw.githubusercontent.com/wolf-table/table-renderer/main/logo.svg" height="100px" width="700"/>
+    <img src="https://raw.githubusercontent.com/wolf-table/table-renderer/main/logo.svg" height="100px" width="700px"/>
   </a>
-</div>
+</p>
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/wolf-table/table-render/npm-publish-github-packages.yml)
 [![npm package](https://img.shields.io/npm/v/@wolf-table/table-renderer.svg)](https://www.npmjs.org/package/@wolf-table/table-renderer)
