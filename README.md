@@ -5,11 +5,11 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/actions/workflow/status/wolf-table/table-render/npm-publish-github-packages.yml" alt="GitHub Workflow Status">
+  <img src="https://img.shields.io/github/actions/workflow/status/wolf-table/table-renderer/npm-publish-github-packages.yml" alt="GitHub Workflow Status">
   <a href="https://www.npmjs.org/package/@wolf-table/table-renderer"><img src="https://img.shields.io/npm/v/@wolf-table/table-renderer.svg" alt="npm package"></a>
   <img src="https://img.shields.io/github/downloads/wolf-table/table-renderer/total" alt="GitHub all releases">
   <img src="https://img.shields.io/github/license/wolf-table/table-renderer" alt="GitHub">
-  <img src="https://img.shields.io/github/languages/code-size/wolf-table/table-renderer" alt="GitHub code size in bytes">
+  <img src="https://img.shields.io/github/languages/code-size/wolf-table/table-renderer" alt=" code size in bytes">
 </p>
 
 ## wolf-table-renderer
