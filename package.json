@@ -1,6 +1,6 @@
 {
   "name": "@wolf-table/table-renderer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a based-canvas table renderer",
   "main": "dist/table-renderer.js",
   "types": "dist/index.d.ts",
