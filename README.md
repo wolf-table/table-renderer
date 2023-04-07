@@ -15,6 +15,9 @@
 ## wolf-table-renderer
 > A web-based(canvas) JavaScript Table Renderer
 
+## Demo
+<a href="https://stackblitz.com/edit/wolf-table-renderer-8pxhwa?file=index.ts">Open in Stackblitz</a>
+
 ## NPM
 npm install
 ```shell
