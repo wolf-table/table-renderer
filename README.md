@@ -16,11 +16,7 @@
 > A web-based(canvas) JavaScript Table Renderer
 
 ## NPM
-1) In the same directory as your <code>package.json</code> file, create or edit an <code>.npmrc</code> file
-```shell
-@wolf-table:registry=https://npm.pkg.github.com
-```
-2) npm install
+npm install
 ```shell
 npm install @wolf-table/table-renderer@0.0.1
 ```
