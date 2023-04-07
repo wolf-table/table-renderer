@@ -1,4 +1,4 @@
-import TableRender, { Cell, Canvas } from './src';
+import TableRenderer, { Cell, Canvas } from './src';
 const longText = {
   value: 'you are a good boy, a very good boy-------!!!',
   style: 0,
@@ -35,7 +35,7 @@ function cellRenderer(canvas: Canvas, { x, y, width, height }, cell) {
   return true;
 }
 
-TableRender.create('#table', 1400, 800)
+TableRenderer.create('#table', 1400, 800)
   .scale(1)
   .bgcolor('#fff')
   .colHeader({
